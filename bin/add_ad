@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use AdServer::Schema;
+
+my ($client_code, $campaign_code, $code, $name, $url, $header, $text) = @ARGV;
+
+die "Usage: $0 <client_code> <campaign_code> <code> <name> <url> <header> <text>\n"
+    unless $client_code && $campaign_code && $code && $name && $url && $header && $text;
+
+my $sch = AdServer::Schema->get_schema;
+
+my $client = $sch->resultset('Client')->find({
+  code => $client_code,
+});
+
+die "Can't find client $client_code\n" unless $client;
+
+my $campaign = $client->campaigns->find({
+  code => $campaign_code,
+});
+
+die "Can't find campaign $campaign_code\n" unless $campaign;
+
+$campaign->add_to_ads({
+  code => $code,
+  name => $name,
+  url => $url,
+  heading => $header,
+  body_text => $text,
+});

@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use feature 'say';
+
+use AdServer::Schema;
+use Digest::MD5 'md5_hex';
+
+my $sch = AdServer::Schema->get_schema;
+
+for ($sch->resultset('Ad')->search({}, {
+  prefetch => {
+    'campaign' => 'client'
+  }
+})) {
+  my $string = $_->campaign->client->code . ':' . $_->campaign->code . ':' .$_->code;
+  my $hash = md5_hex($string);
+  say "$string -> $hash";
+  $_->update({ hash => $hash });
+} 

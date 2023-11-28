@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use AdServer::Schema;
+
+my ($name, $code) = @ARGV;
+die "Usage: $0 <name> [<code>]\n" unless $name;
+
+if (!$code) {
+  $code = lc $name;
+  $code =~ s/\W+/-/g;
+}
+
+my $sch = AdServer::Schema->get_schema;
+
+$sch->resultset('Client')->create({
+  name => $name,
+  code => $code,
+});

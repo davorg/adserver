@@ -1,0 +1,18 @@
+#!/bin/bash
+
+check_vars() {
+  # No need to check for ADSERVER_DB_PORT
+  declare -a vars=(ADSERVER_DB_HOST ADSERVER_DB_NAME ADSERVER_DB_USER ADSERVER_DB_PASS)
+
+  for var_name in "${vars[@]}"
+  do
+    if [ -z "$(eval "echo \$$var_name")" ]; then
+      errors+=($var_name)
+    fi
+  done
+
+  if [ ${#errors[@]} -ne 0 ]; then
+      echo "Missing environment variable(s): ${errors[*]}"
+      exit 1
+  fi
+}

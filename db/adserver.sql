@@ -1,0 +1,38 @@
+DROP TABLE IF EXISTS click;
+DROP TABLE IF EXISTS ad;
+DROP TABLE IF EXISTS campaign;
+DROP TABLE IF EXISTS client;
+
+CREATE TABLE client (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE campaign (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    client_id INT,
+    FOREIGN KEY (client_id) REFERENCES client(id)
+);
+
+CREATE TABLE ad (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    URL VARCHAR(2048) NOT NULL,
+    heading VARCHAR(255) NOT NULL,
+    body_text TEXT NOT NULL,
+    campaign_id INT,
+    FOREIGN KEY (campaign_id) REFERENCES campaign(id)
+);
+
+CREATE TABLE click (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ad_id INT,
+    referer VARCHAR(2048),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    medium VARCHAR(255),
+    FOREIGN KEY (ad_id) REFERENCES ad(id)
+);
