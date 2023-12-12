@@ -1,0 +1,10 @@
+<html>
+  <head>
+    <title><% ad.heading %></title>
+  </head>
+  <body>
+    <h1><% ad.heading %></h1>
+    <p><% ad.body_text %></p>
+    <p><a href="<% request.base %>ad/<% ad.hash %>"><% ad.url %></a></p>
+  </bpdy>
+</html>

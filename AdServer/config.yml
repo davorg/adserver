@@ -16,8 +16,9 @@ layout: "main"
 # about unicode within your app when this setting is set (recommended).
 charset: "UTF-8"
 
-serializer: JSON
-content_type: application/json
+# serializer: JSON
+# content_type: application/json
+content_type: text/html
 
 # === Engines ===
 #
@@ -40,11 +41,11 @@ engines:
       start_tag: '<%'
       end_tag:   '%>'
 
-  serializer:
-    JSON:
-      allow_nonref: 1
-      canonical: 1
-      pretty: 1
+#  serializer:
+#    JSON:
+#      allow_nonref: 1
+#      canonical: 1
+#      pretty: 1
 
 # session engine
 #

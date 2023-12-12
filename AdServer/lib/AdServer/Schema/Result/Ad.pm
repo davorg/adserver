@@ -62,6 +62,12 @@ __PACKAGE__->table("ad");
   is_nullable: 0
   size: 2048
 
+=head2 image
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
 =head2 heading
 
   data_type: 'varchar'
@@ -73,17 +79,17 @@ __PACKAGE__->table("ad");
   data_type: 'text'
   is_nullable: 0
 
-=head2 campaign_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
 =head2 hash
 
   data_type: 'char'
   is_nullable: 0
   size: 32
+
+=head2 campaign_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
 
 =cut
 
@@ -96,14 +102,16 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "url",
   { data_type => "varchar", is_nullable => 0, size => 2048 },
+  "image",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "heading",
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "body_text",
   { data_type => "text", is_nullable => 0 },
-  "campaign_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "hash",
   { data_type => "char", is_nullable => 0, size => 32 },
+  "campaign_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -119,6 +127,20 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
+
+=head2 C<campaign_id>
+
+=over 4
+
+=item * L</campaign_id>
+
+=item * L</code>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("campaign_id", ["campaign_id", "code"]);
 
 =head2 C<hash>
 
@@ -169,10 +191,45 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 impressions
 
-# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-11-28 12:13:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qrqwrgTcAVcA7DeqMjE4YQ
+Type: has_many
 
+Related object: L<AdServer::Schema::Result::Impression>
+
+=cut
+
+__PACKAGE__->has_many(
+  "impressions",
+  "AdServer::Schema::Result::Impression",
+  { "foreign.ad_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-04 17:08:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UZcE06gPoa6nRAGObD/7VQ
+
+use Data::Printer;
+use Digest::MD5 'md5_hex';
+
+around insert => sub {
+  warn np @_;
+
+  my $orig = shift;
+  my $self = shift;
+
+  unless ($self->hash) {
+    my $sch = $self->result_source->schema;
+    my $campaign = $sch->resultset('Campaign')->find($self->campaign_id);
+    my $client = $campaign->client;
+
+    my $string = $client->code . ':' . $campaign->code . ':' . $self->code;
+    $self->hash(md5_hex($string));
+  }
+
+  $self->$orig(@_);
+};
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

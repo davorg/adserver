@@ -79,6 +79,32 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<code>
+
+=over 4
+
+=item * L</code>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("code", ["code"]);
+
+=head2 C<name>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("name", ["name"]);
+
 =head1 RELATIONS
 
 =head2 campaigns
@@ -97,8 +123,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-11-27 16:03:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oC+no0TTGgEwySvctOfnJA
+# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-04 17:08:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ChIVRJEV0HtRHzC50dnyZA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,0 +1,61 @@
+[{
+  "name" : "Magnum Solutions",
+  "code" : "magsol",
+  "campaigns" : [{
+    "name" : "GitHub Actions Essentials",
+    "code" : "ghae",
+    "ads" : [{
+      "code" : "ghae1",
+      "name" : "GitHub Actions Essentials - Ad 1",
+      "url"  : "https://actions.davecross.co.uk/",
+      "heading" : "GitHub Actions Essentials",
+      "body_text": "It's very good. Buy it."
+    }, {
+      "code" : "ghae2",
+      "name" : "GitHub Actions Essentials - Ad 2",
+      "url"  : "https://actions.davecross.co.uk/",
+      "heading" : "GitHub Actions Essentials",
+      "body_text": "Everyone has a copy. Why don't you?"
+    }]
+  }, {
+    "name" : "George and the Smart Home",
+    "code" : "george",
+    "ads" : [{
+      "code" : "george1",
+      "name" : "George - Ad 1",
+      "url"  : "https://george.davecross.co.uk/",
+      "heading" : "George and the Smart Home",
+      "body_text": "Watch George solve his smart home problems."
+    }, {
+      "code" : "george2",
+      "name" : "George - Ad 2",
+      "url"  : "https://george.davecross.co.uk/",
+      "heading" : "George and the Smart Home",
+      "body_text": "George has a problem with his smart home."
+    }]
+  }]
+}, {
+  "name" : "Will Sowman",
+  "code" : "willsow",
+  "campaigns" : [{
+    "name" : "Prompt Engineering",
+    "code" : "prompt",
+    "ads" : [{
+      "code" : "prompt1",
+      "name" : "Prompt Engineering - Ad 2",
+      "url"  : "https://will.sowman.org/",
+      "heading" : "Prompt Engineering for Everyone",
+      "body_text": "Don't get left behind by the AI revolution."
+    }]
+  }, {
+    "name" : "Commuting to Freedom",
+    "code" : "freedom",
+    "ads" : [{
+      "code" : "freedom1",
+      "name" : "Freedom - Ad 1",
+      "url"  : "https://will.sowman.org/",
+      "heading" : "From Commuting to Freedom",
+      "body_text": "Why work for the Man?"
+    }]
+  }]
+}]

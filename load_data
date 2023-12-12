@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Path::Tiny;
+use JSON;
+
+use AdServer::Schema;
+
+my $json = path('data.json')->slurp_utf8;
+my $data = JSON->new->decode($json);
+
+my $sch = AdServer::Schema->get_schema;
+my $rs = $sch->resultset('Client');
+
+for (@$data) {
+  $rs->create($_);
+}
