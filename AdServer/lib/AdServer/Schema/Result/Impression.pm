@@ -73,7 +73,7 @@ __PACKAGE__->table("impression");
 
   data_type: 'char'
   is_nullable: 1
-  size: 15
+  size: 40
 
 =head2 user_agent
 
@@ -100,7 +100,7 @@ __PACKAGE__->add_columns(
   "medium",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "ip_addr",
-  { data_type => "char", is_nullable => 1, size => 15 },
+  { data_type => "char", is_nullable => 1, size => 40 },
   "user_agent",
   { data_type => "varchar", is_nullable => 1, size => 2048 },
 );
@@ -140,8 +140,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-12 11:39:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:V5AILuDicxv6OGUaWCcwLQ
+# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-12 13:13:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fKDqq3LAdOMLsSJHw16JPQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

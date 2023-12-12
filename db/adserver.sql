@@ -48,7 +48,7 @@ CREATE TABLE impression (
     referer VARCHAR(2048),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     medium VARCHAR(255),
-    ip_addr CHAR(15),
+    ip_addr CHAR(40),
     user_agent VARCHAR(2048),
     FOREIGN KEY (ad_id) REFERENCES ad(id)
 );
