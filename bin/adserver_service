@@ -1,0 +1,33 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+use Daemon::Control;
+
+use Cwd qw(abs_path);
+use File::Basename;
+
+my $abs_path = abs_path($0);
+my $abs_dir  = dirname($0);
+
+Daemon::Control->new({
+  name      => 'Melody',
+  lsb_start => '$syslog $remote_fs',
+  lsb_stop  => '$syslog',
+  lsb_sdesc => 'Project Melody',
+  lsb_desc  => 'Project Melody',
+  path      => $abs_path,
+
+  program      => '/usr/bin/starman',
+  program_args => [ '--workers', 10, '-l', ':4444',
+                    "$abs_dir/../Melody/bin/app.psgi" ],
+
+  user  => 'davorg',
+  group => 'psacln',
+
+  pid_file    => '/var/run/melody.pid',
+  stderr_file => '/var/log/melody/error.log',
+  stdout_file => '/var/log/melody/output.log',
+
+  fork => 2,
+})->run;
