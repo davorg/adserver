@@ -1,3 +1,4 @@
 adserver.conf
 .vscode/
 *.code-workspace
+AdServer/public/images/client/*
