@@ -2,11 +2,12 @@ package AdServer;
 use Dancer2;
 use FindBin '$RealBin';
 
-use AdServer::Schema;
+use AdServer::Model;
 
 our $VERSION = '0.1';
 
-my $sch = AdServer::Schema->get_schema;
+my $model = AdServer::Model->new;
+my $sch = $model->schema;
 
 get '/' => sub {
   return {
@@ -20,23 +21,15 @@ get '/client/:client_code/campaign/:campaign_code/ad/:ad_code' => sub {
   my $campaign_code = route_parameters->get('campaign_code');
   my $ad_code = route_parameters->get('ad_code');
 
-  my $client = $sch->resultset('Client')->find({
-    code => $client_code,
-  });
+  my $client = $model->get_client_from_code($client_code);
 
   return 404, { error => "Can't find client $client_code" } unless $client;
 
-  my $campaign = $client->campaigns->find({
-    code => $campaign_code,
-  }, {
-    prefetch => 'ads',
-  });
+  my $campaign = $model->get_client_campaign_from_code($client, $campaign_code, 1);
 
   return 404, { error => "Can't find campaign $campaign_code" } unless $campaign;
 
-  my $ad = $campaign->ads->find({
-    code => $ad_code,
-  });
+  my $ad = $model->get_ad_from_code($campaign, $ad_code);
 
   return 404, { error => "Can't find ad $ad_code" } unless $ad;
 
@@ -58,17 +51,11 @@ get '/client/:client_code/campaign/:campaign_code' => sub {
   my $client_code = route_parameters->get('client_code');
   my $campaign_code = route_parameters->get('campaign_code');
 
-  my $client = $sch->resultset('Client')->find({
-    code => $client_code,
-  });
+  my $client = $model->get_client_from_code($client_code);
 
   return 404, { error => "Can't find client $client_code" } unless $client;
 
-  my $campaign = $client->campaigns->find({
-    code => $campaign_code,
-  }, {
-    prefetch => 'ads',
-  });
+  my $campaign = $model->get_client_campaign_from_code($client, $campaign_code, 1);
 
   return 404, { error => "Can't find campaign $campaign_code" } unless $campaign;
 
@@ -91,11 +78,7 @@ get '/client/:client_code/campaign/:campaign_code' => sub {
 
 get '/client/:client_code' => sub {
   my $client_code = route_parameters->get('client_code');
-  my $client = $sch->resultset('Client')->find({
-    code => $client_code,
-  }, {
-    prefetch => { 'campaigns' => 'ads' },
-  });
+  my $client = $model->get_client_from_code($client_code, 1);
 
   return 404, { error => "Can't find client $client_code" } unless $client;
 
@@ -117,11 +100,23 @@ get '/client/:client_code' => sub {
   };
 };
 
+get '/client' => sub {
+  my @clients = map {
+    {
+      code => $_->code,
+      name => $_->name,
+    }
+  } $sch->resultset('Client')->all;
+
+  return {
+    clients => \@clients,
+  };
+
+};
+
 get '/ad/:hash' => sub {
   my $ad_hash = route_parameters->get('hash');
-  my $ad = $sch->resultset('Ad')->find({
-    hash => $ad_hash,
-  });
+  my $ad = $model->get_ad_from_hash($ad_hash);
 
   unless ($ad) {
     status 404 and return "Can't find ad $ad_hash";
