@@ -1,8 +1,5 @@
 package AdServer::Model;
 
-use feature 'signatures';
-no warnings 'experimental::signatures';
-
 use AdServer::Schema;
 
 use Moo;
@@ -15,7 +12,10 @@ has schema => (
 
 sub _build_schema { return AdServer::Schema->get_schema; }
 
-sub get_client_from_code ($self, $client_code, $get_campaigns = 0) {
+sub get_client_from_code {
+  my $self = shift;
+  my ($client_code, $get_campaigns) = @_;
+
   if ($get_campaigns) {
     return $self->schema->resultset('Client')->find({
       code => $client_code,
@@ -29,7 +29,10 @@ sub get_client_from_code ($self, $client_code, $get_campaigns = 0) {
   });
 }
 
-sub get_client_campaign_from_code ($self, $client, $campaign_code, $get_ads = 0) {
+sub get_client_campaign_from_code {
+  my $self = shift;
+  my ($client_code, $campaign_code, $get_ads) = @_;
+
   return unless $client;
   if ($get_ads) {
     return $client->campaigns->find({
@@ -44,18 +47,26 @@ sub get_client_campaign_from_code ($self, $client, $campaign_code, $get_ads = 0)
   });
 }
 
-sub get_ad_from_code ($self, $campaign, $ad_code) {
+sub get_ad_from_code {
+  my $self = shift;
+  my ($campaign, $ad_code) = @_;
+
   return unless $campaign;
   return $campaign->ads->find({
     code => $ad_code,
   });
 }
 
-sub get_ad_from_hash ($self, $ad_hash) {
+sub get_ad_from_hash {
+  my $self = shift;
+  my ($ad_hash) = @_;
+
   return $self->schema->resultset('Ad')->find({ hash => $ad_hash});
 }
 
-sub get_clients($self) {
+sub get_clients {
+  my $self = shift;
+
   return map { { $_->get_columns } } $self->schema->resultset('Client')->all;
 }
 
