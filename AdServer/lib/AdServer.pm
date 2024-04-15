@@ -10,9 +10,10 @@ my $model = AdServer::Model->new;
 my $sch = $model->schema;
 
 get '/' => sub {
-  return {
+  return encode_json({
     app => 'AdServer',
-  };
+    ver => $VERSION,
+  });
 };
 
 get '/client/:client_code/campaign/:campaign_code/ad/:ad_code' => sub {
@@ -33,17 +34,7 @@ get '/client/:client_code/campaign/:campaign_code/ad/:ad_code' => sub {
 
   return 404, { error => "Can't find ad $ad_code" } unless $ad;
 
-  $ad->add_to_impressions({
-    ip_addr    => request->remote_address,
-    user_agent => request->user_agent,
-    referer    => request->referer,
-  });
-
-  return template 'standard', {
-    request => request,
-    ad => $ad,
-  }, { layout => undef,
-  };
+  return template @{ $ad->serve(request) };
 };
 
 get '/client/:client_code/campaign/:campaign_code' => sub {
@@ -63,17 +54,7 @@ get '/client/:client_code/campaign/:campaign_code' => sub {
 
   my $ad = @ads > 1 ? $ads[rand @ads] : $ads[0];
 
-  $ad->add_to_impressions({
-    ip_addr    => request->remote_address,
-    user_agent => request->user_agent,
-    referer    => request->referer,
-  });
-
-  return template 'standard', {
-    request => request,
-    ad => $ad,
-  }, { layout => undef,
-  };
+  return template @{ $ad->serve(request) };
 };
 
 get '/client/:client_code' => sub {
@@ -86,36 +67,19 @@ get '/client/:client_code' => sub {
 
   my $ad = @ads > 1 ? $ads[rand @ads] : $ads[0];
 
-  $ad->add_to_impressions({
-    ip_addr    => request->remote_address,
-    user_agent => request->user_agent,
-    referer    => request->referer,
-  });
-
-  return template 'standard', {
-    request => request,
-    ad => $ad,
-  }, {
-    layout => undef,
-  };
+  return template @{ $ad->serve(request) };
 };
 
 get '/client' => sub {
-  my @clients = map {
-    {
-      code => $_->code,
-      name => $_->name,
-    }
-  } $sch->resultset('Client')->all;
 
-  return {
-    clients => \@clients,
-  };
-
+  return encode_json({
+    clients => [ $model->get_clients ],
+  });
 };
 
 get '/ad/:hash' => sub {
   my $ad_hash = route_parameters->get('hash');
+  my $referer = query_parameters->get('referer');
   my $ad = $model->get_ad_from_hash($ad_hash);
 
   unless ($ad) {
@@ -125,7 +89,7 @@ get '/ad/:hash' => sub {
   # warn np $ad->get_columns;
 
   $ad->add_to_clicks({
-    referer => request->referer,
+    referer => $referer,
   });
 
   return redirect $ad->url;

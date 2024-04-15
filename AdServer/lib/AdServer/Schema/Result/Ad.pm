@@ -210,6 +210,9 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-04 17:08:05
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UZcE06gPoa6nRAGObD/7VQ
 
+use feature 'signatures';
+no warnings 'experimental::signatures';
+
 use Data::Printer;
 use Digest::MD5 'md5_hex';
 
@@ -230,6 +233,26 @@ around insert => sub {
 
   $self->$orig(@_);
 };
+
+sub serve ($self, $request) {
+  $self->add_to_impressions({
+    ip_addr    => $request->remote_address,
+    user_agent => $request->user_agent,
+    referer    => $request->referer,
+  });
+
+  return [
+    'standard',
+    {
+      request => $request,
+      ad      => $self,
+      referer => $request->referer,
+    },
+    {
+      layout => undef
+    },
+  ]
+}
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

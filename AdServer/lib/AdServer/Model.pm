@@ -8,7 +8,7 @@ field $schema = AdServer::Schema->get_schema;
 
 method schema { return $schema; }
 
-method get_client_from_code ($client_code, $get_campaigns) {
+method get_client_from_code ($client_code, $get_campaigns = 0) {
   if ($get_campaigns) {
     return $schema->resultset('Client')->find({
       code => $client_code,
@@ -22,7 +22,7 @@ method get_client_from_code ($client_code, $get_campaigns) {
   });
 }
 
-method get_client_campaign_from_code ($client, $campaign_code, $get_ads) {
+method get_client_campaign_from_code ($client, $campaign_code, $get_ads = 0) {
   return unless $client;
   if ($get_ads) {
     return $client->campaigns->find({
@@ -46,6 +46,10 @@ method get_ad_from_code ($campaign, $ad_code) {
 
 method get_ad_from_hash ($ad_hash) {
   return $schema->resultset('Ad')->find({ hash => $ad_hash});
+}
+
+method get_clients {
+  return map { { $_->get_columns } } $schema->resultset('Client')->all;
 }
 
 1;

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+dir=$(dirname "$0")
+# shellcheck source=bin/func_defs
+. "$dir/func_defs"
+
+check_vars
+
+echo Loading database
+mysql \
+  -h"$ADSERVER_DB_HOST" \
+  -P"${ADSERVER_DB_PORT:-3306}" \
+  -u"$ADSERVER_DB_USER" \
+  -p"$ADSERVER_DB_PASS" \
+  "$ADSERVER_DB_NAME" < db/adserver_dump.sql
+

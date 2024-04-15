@@ -5,21 +5,39 @@
       body {
         font-family: Arial, Helvetica, sans-serif;
       }
+      h1 {
+        font-size: 7vw;
+        margin-top: 0;
+        margin-bottom: 2.5vw;
+      }
+      p {
+        font-size: 5vw;
+        margin: 0;
+      }
       div.img {
         float: left;
-        margin-right: 5px;
+        width: 23%;
+        margin-right: 0;
+      }
+      div.text {
+        float: right;
+        width: 73%;
+        margin-bottom: 0;
+        padding-left: 2vw;
       }
       div.img img {
-        max-width: 100px;
-        max-height: 100px;
+        max-width: 100%;
+        min-height: 100%;
         border: 0;
       }
     </style>
   </head>
   <body>
-    <h1><% ad.heading %></h1>
     <% IF ad.image %><div class="img"><a href="<% request.base %>ad/<% ad.hash %>"><img src="/images/client/<% ad.campaign.client.code %>/<% ad.image %>" /></a></div><% END %>
-    <p><% ad.body_text %></p>
-    <p><a href="<% request.base %>ad/<% ad.hash %>"><% ad.url %></a></p>
+    <div class="text">
+      <h1><% ad.heading %></h1>
+      <p><% ad.body_text %></p>
+      <p><a target="_blank" href="<% request.base %>ad/<% ad.hash %>?referer=<% referer %>"><% ad.url %></a></p>
+    </div>
   </bpdy>
 </html>
