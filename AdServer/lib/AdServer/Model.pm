@@ -31,7 +31,7 @@ sub get_client_from_code {
 
 sub get_client_campaign_from_code {
   my $self = shift;
-  my ($client_code, $campaign_code, $get_ads) = @_;
+  my ($client, $campaign_code, $get_ads) = @_;
 
   return unless $client;
   if ($get_ads) {
