@@ -14,3 +14,4 @@ my $test = Plack::Test->create($app);
 my $res  = $test->request( GET '/' );
 
 ok( $res->is_success, '[GET /] successful' );
+

@@ -2,6 +2,8 @@ package AdServer;
 use Dancer2;
 use FindBin '$RealBin';
 
+use Sys::Hostname;
+
 use AdServer::Model;
 
 our $VERSION = '0.1';
@@ -11,8 +13,9 @@ my $sch = $model->schema;
 
 get '/' => sub {
   return encode_json({
-    app => 'AdServer',
-    ver => $VERSION,
+    app  => 'AdServer',
+    ver  => $VERSION,
+    host => hostname,
   });
 };
 
