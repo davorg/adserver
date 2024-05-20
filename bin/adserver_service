@@ -19,7 +19,7 @@ if (grep { ! $ENV{"ADSERVER_DB_$_"} } @vars) {
 }
 
 Daemon::Control->new({
-  name      => 'AdServer',
+  name      => ucfirst lc $ENV{ADSERVER_APP_NAME},
   lsb_start => '$syslog $remote_fs',
   lsb_stop  => '$syslog',
   lsb_sdesc => 'AdServer',
@@ -27,15 +27,15 @@ Daemon::Control->new({
   path      => $abs_path,
 
   program      => '/usr/bin/starman',
-  program_args => [ '--workers', 10, '-l', ':4545',
+  program_args => [ '--workers', 10, '-l', ":$ENV{ADSERVER_APP_PORT}",
                     "$abs_dir/../AdServer/bin/app.psgi" ],
 
-  user  => 'davorg',
-  group => 'psacln',
+  user  => $ENV{ADSERVER_APP_USER},
+  group => $ENV{ADSERVER_APP_GROUP},
 
-  pid_file    => '/var/run/adserver.pid',
-  stderr_file => '/var/log/adserver/error.log',
-  stdout_file => '/var/log/adserver/output.log',
+  pid_file    => "/var/run/$ENV{ADSERVER_ADD_NAME}.pid",
+  stderr_file => "$ENV{ADSERVER_LOG_DIR{/error.log",
+  stdout_file => "$ENV{ADSERVER_LOG_DIR}/output.log",
 
   fork => 2,
 })->run;
