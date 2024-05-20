@@ -4,11 +4,19 @@ use warnings;
 use strict;
 use Daemon::Control;
 
+use ENV::Util -load_dotenv;
+
 use Cwd qw(abs_path);
 use File::Basename;
 
 my $abs_path = abs_path($0);
 my $abs_dir  = dirname($0);
+
+my @vars = qw[HOST NAME USER PASS];
+
+if (grep { ! $ENV{"ADSERVER_DB_$_"} } @vars) {
+  die "Please define the DB connection variables: ADSERVER_DB*\n";
+}
 
 Daemon::Control->new({
   name      => 'AdServer',
