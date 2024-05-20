@@ -1,3 +1,4 @@
+.env
 adserver.conf
 .vscode/
 *.code-workspace
