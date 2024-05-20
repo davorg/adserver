@@ -34,7 +34,7 @@ Daemon::Control->new({
   group => $ENV{ADSERVER_APP_GROUP},
 
   pid_file    => "/var/run/$ENV{ADSERVER_ADD_NAME}.pid",
-  stderr_file => "$ENV{ADSERVER_LOG_DIR{/error.log",
+  stderr_file => "$ENV{ADSERVER_LOG_DIR}/error.log",
   stdout_file => "$ENV{ADSERVER_LOG_DIR}/output.log",
 
   fork => 2,
