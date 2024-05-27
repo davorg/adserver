@@ -28,7 +28,7 @@ Daemon::Control->new({
 
   program      => '/usr/bin/starman',
   program_args => [ '--workers', 10, '-l', ":$ENV{ADSERVER_APP_PORT}",
-                    "$abs_dir/../AdServer/bin/app.psgi" ],
+                    "$abs_dir/AdServer/bin/app.psgi" ],
 
   user  => $ENV{ADSERVER_APP_USER},
   group => $ENV{ADSERVER_APP_GROUP},
