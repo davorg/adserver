@@ -30,8 +30,8 @@ Daemon::Control->new({
   program_args => [ '--workers', ($ENV{ADSERVER_WORKER_COUNT} // 10), '-l', ":$ENV{ADSERVER_APP_PORT}",
                     "$abs_dir/AdServer/bin/app.psgi" ],
 
-  user  => $ENV{ADSERVER_APP_USER},
-  group => $ENV{ADSERVER_APP_GROUP},
+  user  => $ENV{ADSERVER_OWNER},
+  group => $ENV{ADSERVER_GROUP},
 
   pid_file    => "/var/run/$ENV{ADSERVER_APP_NAME}.pid",
   stderr_file => "$ENV{ADSERVER_LOG_DIR}/error.log",
