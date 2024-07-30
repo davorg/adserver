@@ -18,6 +18,19 @@ if (grep { ! $ENV{"ADSERVER_DB_$_"} } @vars) {
   die "Please define the DB connection variables: ADSERVER_DB*\n";
 }
 
+my @program_args;
+
+if ($ENV{ADSERVER_WORKER_COUNT}) {
+  push @program_args, '--workers', $ENV{ADSERVER_WORKER_COUNT};
+}
+if ($ENV{ADSERVER_APP_PORT}) {
+  push @program_args, '-l', ":$ENV{ADSERVER_APP_PORT}";
+}
+if ($ENV{ADSERVER_APP_PRELOAD}) {
+  push @program_args, '--preload-app');
+}
+push @program_args, "$abs_dir/AdServer/bin/app.psgi";
+
 Daemon::Control->new({
   name      => ucfirst lc $ENV{ADSERVER_APP_NAME},
   lsb_start => '$syslog $remote_fs',
@@ -27,8 +40,7 @@ Daemon::Control->new({
   path      => $abs_path,
 
   program      => '/usr/bin/starman',
-  program_args => [ '--workers', ($ENV{ADSERVER_WORKER_COUNT} // 10), '-l', ":$ENV{ADSERVER_APP_PORT}",
-                    "$abs_dir/AdServer/bin/app.psgi" ],
+  program_args => \@program_args,
 
   user  => $ENV{ADSERVER_OWNER},
   group => $ENV{ADSERVER_GROUP},
