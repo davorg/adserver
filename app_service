@@ -27,7 +27,7 @@ if ($ENV{ADSERVER_APP_PORT}) {
   push @program_args, '-l', ":$ENV{ADSERVER_APP_PORT}";
 }
 if ($ENV{ADSERVER_APP_PRELOAD}) {
-  push @program_args, '--preload-app');
+  push @program_args, '--preload-app';
 }
 push @program_args, "$abs_dir/AdServer/bin/app.psgi";
 
