@@ -5,10 +5,12 @@ use warnings;
 
 use AdServer::Schema;
 
-my ($client_code, $campaign_code) = @ARGV;
+my ($client_code, $name) = @ARGV;
 
 die "Usage: $0 <client_code> <name> [<code>]\n"
     unless $client_code && $name;
+
+my $code;
 
 if (!$code) {
   $code = lc $name;
