@@ -231,6 +231,25 @@ around insert => sub {
   $self->$orig(@_);
 };
 
+sub display_url {
+  my $self = shift;
+
+  my $display_url = $self->url;
+
+  warn "Start: $display_url\n";
+
+  # Remove https://
+  $display_url =~ s|^https?://||;
+  # Remove trailing fragment
+  $display_url =~ s|#\w+$||;
+  # Remove trailing slash
+  $display_url =~ s|/$||;
+
+  warn "End: $display_url\n";
+
+  return $display_url;
+}
+
 sub serve {
   my $self = shift;
   my ($request) = @_;
