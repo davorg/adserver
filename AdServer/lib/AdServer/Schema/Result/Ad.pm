@@ -236,9 +236,9 @@ sub serve {
   my ($request) = @_;
 
   $self->add_to_impressions({
-    ip_addr    => $request->remote_address,
-    user_agent => $request->user_agent,
-    referer    => $request->referer,
+    ip_addr    => ($request->remote_address // 'Unknown address'),
+    user_agent => ($request->user_agent // 'Unknown UA'),
+    referer    => ($request->referer // 'Unknown referer'),
   });
 
   return [
@@ -246,7 +246,7 @@ sub serve {
     {
       request => $request,
       ad      => $self,
-      referer => $request->referer,
+      referer => ($request->referer // 'Unknown referer'),
     },
     {
       layout => undef
