@@ -241,7 +241,7 @@ sub display_url {
   # Remove https://
   $display_url =~ s|^https?://||;
   # Remove trailing fragment
-  $display_url =~ s|#\w+$||;
+  $display_url =~ s|#[-\w]+$||;
   # Remove trailing slash
   $display_url =~ s|/$||;
 
