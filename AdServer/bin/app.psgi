@@ -23,7 +23,7 @@ use Plack::Builder;
 
 builder {
   enable 'Static',
-    path => qr[^/(images|css|javascripts)/], root => './public';
+    path => qr[^/(images|css|javascripts)/], root => './public', pass_through => 1;
   AdServer->to_app;
 };
 
