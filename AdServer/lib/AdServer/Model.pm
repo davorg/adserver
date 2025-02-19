@@ -17,14 +17,14 @@ sub get_client_from_code {
   my ($client_code, $get_campaigns) = @_;
 
   if ($get_campaigns) {
-    return $self->schema->resultset('Client')->find({
+    return $self->schema->resultset('Client')->find_live({
       code => $client_code,
     }, {
       prefetch => 'campaigns',
     });
   }
 
-  return $self->schema->resultset('Client')->find({
+  return $self->schema->resultset('Client')->find_live({
     code => $client_code,
   });
 }
@@ -35,14 +35,14 @@ sub get_client_campaign_from_code {
 
   return unless $client;
   if ($get_ads) {
-    return $client->campaigns->find({
+    return $client->campaigns->find_live({
       code => $campaign_code,
     }, {
       prefetch => 'ads',
     });
   }
 
-  return $client->campaigns->find({
+  return $client->campaigns->find_live({
     code => $campaign_code,
   });
 }
@@ -52,7 +52,7 @@ sub get_ad_from_code {
   my ($campaign, $ad_code) = @_;
 
   return unless $campaign;
-  return $campaign->ads->find({
+  return $campaign->ads->find_live({
     code => $ad_code,
   });
 }
@@ -61,13 +61,13 @@ sub get_ad_from_hash {
   my $self = shift;
   my ($ad_hash) = @_;
 
-  return $self->schema->resultset('Ad')->find({ hash => $ad_hash});
+  return $self->schema->resultset('Ad')->find_live({ hash => $ad_hash});
 }
 
 sub get_clients {
   my $self = shift;
 
-  return map { { $_->get_columns } } $self->schema->resultset('Client')->all;
+  return map { { $_->get_columns } } $self->schema->resultset('Client')->search_live;
 }
 
 1;
