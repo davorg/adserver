@@ -51,8 +51,8 @@ INSERT INTO `ad` VALUES (4,'ghae1','GitHub Actions Essentials - Ad 1','https://a
 INSERT INTO `ad` VALUES (5,'ghae2','GitHub Actions Essentials - Ad 2','https://actions.davecross.co.uk/','github-actions.png','GitHub Actions Essentials','Automate the boring bits of your software projects','420af519d82911a1615899e1c7faf642',2,1);
 INSERT INTO `ad` VALUES (6,'george1','George - Ad 1','https://george.davecross.co.uk/','george.png','George and the Smart Home','Watch George solve his smart home problems.','014a15e57d7809c6daddc56a3bdb909d',3,1);
 INSERT INTO `ad` VALUES (7,'george2','George - Ad 2','https://george.davecross.co.uk/','george.png','George and the Smart Home','George has a problem with his smart home.','30b6fc20dcfa810372f29bde8d4af043',3,1);
-INSERT INTO `ad` VALUES (8,'prompt1','Prompt Engineering - Ad 2','https://will.sowman.org/','prompt_engineering_for_everyone.jpg','Prompt Engineering for Everyone','Don\'t get left behind by the AI revolution.','5efc0ae0870d82601834e17db8c8d83c',4,1);
-INSERT INTO `ad` VALUES (9,'freedom1','Freedom - Ad 1','https://will.sowman.org/','from_commuting_to_freedom.jpg','From Commuting to Freedom','Why work for the Man?','aff77003315342e84b2545be223ae2ed',5,1);
+INSERT INTO `ad` VALUES (8,'prompt1','Prompt Engineering - Ad 2','https://will.sowman.org/#prompt','prompt_engineering_for_everyone.jpg','Prompt Engineering for Everyone','Don\'t get left behind by the AI revolution.','5efc0ae0870d82601834e17db8c8d83c',4,1);
+INSERT INTO `ad` VALUES (9,'freedom1','Freedom - Ad 1','https://will.sowman.org/#commuting','from_commuting_to_freedom.jpg','From Commuting to Freedom','Why work for the Man?','aff77003315342e84b2545be223ae2ed',5,1);
 INSERT INTO `ad` VALUES (10,'github1','GitHub Training - Ad 1','https://learn.davecross.co.uk/','github-training.png','Master Github skills','Online sessions on GitHub Actions, GitHub Pages and GitHub Copilot','2498bb827b433623a93be873a5c2474e',7,1);
 /*!40000 ALTER TABLE `ad` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -240,4 +240,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-19 18:08:46
+-- Dump completed on 2025-02-19 18:27:33
