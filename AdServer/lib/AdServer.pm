@@ -53,7 +53,7 @@ get '/client/:client_code/campaign/:campaign_code' => sub {
 
   return 404, { error => "Can't find campaign $campaign_code" } unless $campaign;
 
-  my @ads = $campaign->ads->all;
+  my @ads = $campaign->ads->search_live;
 
   my $ad = @ads > 1 ? $ads[rand @ads] : $ads[0];
 
@@ -66,7 +66,7 @@ get '/client/:client_code' => sub {
 
   return 404, { error => "Can't find client $client_code" } unless $client;
 
-  my @ads = map { $_->ads->all } $client->campaigns;
+  my @ads = map { $_->ads->search_live } $client->campaigns->search_live;
 
   my $ad = @ads > 1 ? $ads[rand @ads] : $ads[0];
 
