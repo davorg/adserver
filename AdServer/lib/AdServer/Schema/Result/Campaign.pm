@@ -62,6 +62,12 @@ __PACKAGE__->table("campaign");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 is_live
+
+  data_type: 'tinyint'
+  default_value: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -73,6 +79,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "client_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "is_live",
+  { data_type => "tinyint", default_value => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -141,8 +149,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-04 17:08:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nu3rWIJfdQtB/GT+O/NJTw
+# Created by DBIx::Class::Schema::Loader v0.07052 @ 2025-02-19 17:04:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rqlHELsPvqUPNxcxudcxnQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -91,6 +91,12 @@ __PACKAGE__->table("ad");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 is_live
+
+  data_type: 'tinyint'
+  default_value: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -112,6 +118,8 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 0, size => 32 },
   "campaign_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "is_live",
+  { data_type => "tinyint", default_value => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -207,8 +215,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-04 17:08:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UZcE06gPoa6nRAGObD/7VQ
+# Created by DBIx::Class::Schema::Loader v0.07052 @ 2025-02-19 17:04:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7dLTPUDv+MCtqj/H8Qav5w
 
 use Data::Printer;
 use Digest::MD5 'md5_hex';
