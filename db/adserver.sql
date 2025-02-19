@@ -7,7 +7,8 @@ DROP TABLE IF EXISTS client;
 CREATE TABLE client (
     id INT AUTO_INCREMENT PRIMARY KEY,
     code VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255) NOT NULL UNIQUE
+    name VARCHAR(255) NOT NULL UNIQUE,
+    is_live BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE campaign (
@@ -16,7 +17,8 @@ CREATE TABLE campaign (
     name VARCHAR(255) NOT NULL,
     client_id INT,
     FOREIGN KEY (client_id) REFERENCES client(id),
-    UNIQUE (client_id, code)
+    UNIQUE (client_id, code),
+    is_live BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE ad (
@@ -30,7 +32,8 @@ CREATE TABLE ad (
     hash CHAR(32) NOT NULL UNIQUE,
     campaign_id INT,
     FOREIGN KEY (campaign_id) REFERENCES campaign(id),
-    UNIQUE (campaign_id, code)
+    UNIQUE (campaign_id, code),
+    is_live BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE click (
