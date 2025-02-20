@@ -55,6 +55,9 @@ get '/client/:client_code/campaign/:campaign_code' => sub {
 
   my @ads = $campaign->ads->search_live;
 
+  return 404, { error => "Can't find any ads in campaign $campaign_code" }
+    unless @ads;
+
   my $ad = @ads > 1 ? $ads[rand @ads] : $ads[0];
 
   return template @{ $ad->serve(request) };
