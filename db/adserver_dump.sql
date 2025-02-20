@@ -38,7 +38,7 @@ CREATE TABLE `ad` (
   UNIQUE KEY `hash` (`hash`),
   UNIQUE KEY `campaign_id` (`campaign_id`,`code`),
   CONSTRAINT `ad_ibfk_1` FOREIGN KEY (`campaign_id`) REFERENCES `campaign` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -55,6 +55,7 @@ INSERT INTO `ad` VALUES (8,'prompt1','Prompt Engineering - Ad 2','https://will.s
 INSERT INTO `ad` VALUES (9,'freedom1','Freedom - Ad 1','https://will.sowman.org/#commuting','from_commuting_to_freedom.jpg','From Commuting to Freedom','Why work for the Man?','aff77003315342e84b2545be223ae2ed',5,1);
 INSERT INTO `ad` VALUES (10,'github1','GitHub Training - Ad 1','https://learn.davecross.co.uk/','github-training.png','Master Github skills','Online sessions on GitHub Actions, GitHub Pages and GitHub Copilot','2498bb827b433623a93be873a5c2474e',7,1);
 INSERT INTO `ad` VALUES (11,'downwork1','Down With Work - Ad 1','https://will.sowman.org/#down-with-work','down-with-work.png','Down With Work','There must be a better way to spend your life','209005fd79b767d77308ebe2187235df',8,1);
+INSERT INTO `ad` VALUES (12,'dmp1','Data Munging With Perl - Ad 1','https://perlschool.com/books/data-munging','data-munging-with-perl.png','Data Munging With Perl','Still munging data after all these years','eec36f7f4a2138a2b677d718b82a24f7',9,1);
 /*!40000 ALTER TABLE `ad` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,7 +75,7 @@ CREATE TABLE `campaign` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `client_id` (`client_id`,`code`),
   CONSTRAINT `campaign_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `client` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,6 +91,7 @@ INSERT INTO `campaign` VALUES (5,'freedom','Commuting to Freedom',3,1);
 INSERT INTO `campaign` VALUES (6,'learn-with-dave-cross','Learn with Dave Cross',2,0);
 INSERT INTO `campaign` VALUES (7,'github-training','GitHub Training',2,0);
 INSERT INTO `campaign` VALUES (8,'downwork','Down With Work',3,1);
+INSERT INTO `campaign` VALUES (9,'data-munging-with-perl','Data Munging With Perl',2,1);
 /*!40000 ALTER TABLE `campaign` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -169,7 +171,7 @@ CREATE TABLE `impression` (
   PRIMARY KEY (`id`),
   KEY `ad_id` (`ad_id`),
   CONSTRAINT `impression_ibfk_1` FOREIGN KEY (`ad_id`) REFERENCES `ad` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=203 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=206 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -230,6 +232,9 @@ INSERT INTO `impression` VALUES (199,10,'http://localhost:5000/test.html','2025-
 INSERT INTO `impression` VALUES (200,7,'http://localhost:5000/test.html','2025-02-19 17:39:26',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36');
 INSERT INTO `impression` VALUES (201,6,'http://localhost:5000/test.html','2025-02-19 17:39:30',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36');
 INSERT INTO `impression` VALUES (202,5,'http://localhost:5000/test.html','2025-02-19 17:39:32',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36');
+INSERT INTO `impression` VALUES (203,12,'http://localhost:5000/test.html','2025-02-20 17:58:31',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36');
+INSERT INTO `impression` VALUES (204,12,'http://localhost:5000/test.html','2025-02-20 18:00:50',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36');
+INSERT INTO `impression` VALUES (205,11,'http://localhost:5000/test.html','2025-02-20 18:03:52',NULL,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36');
 /*!40000 ALTER TABLE `impression` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -242,4 +247,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-19 18:38:42
+-- Dump completed on 2025-02-20 18:04:05
