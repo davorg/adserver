@@ -27,15 +27,15 @@ get '/client/:client_code/campaign/:campaign_code/ad/:ad_code' => sub {
 
   my $client = $model->get_client_from_code($client_code);
 
-  return 404, { error => "Can't find client $client_code" } unless $client;
+  send_error("Can't find client $client_code", 404) unless $client;
 
   my $campaign = $model->get_client_campaign_from_code($client, $campaign_code, 1);
 
-  return 404, { error => "Can't find campaign $campaign_code" } unless $campaign;
+  send_error("Can't find campaign $campaign_code for $client_code", 404) unless $campaign;
 
   my $ad = $model->get_ad_from_code($campaign, $ad_code);
 
-  return 404, { error => "Can't find ad $ad_code" } unless $ad;
+  send_error("Can't find ad $ad_code in campaign $campaign_code for client $client_code", 404) unless $ad;
 
   return template @{ $ad->serve(request) };
 };
@@ -47,15 +47,15 @@ get '/client/:client_code/campaign/:campaign_code' => sub {
 
   my $client = $model->get_client_from_code($client_code);
 
-  return 404, { error => "Can't find client $client_code" } unless $client;
+  send_error("Can't find client $client_code", 404) unless $client;
 
   my $campaign = $model->get_client_campaign_from_code($client, $campaign_code, 1);
 
-  return 404, { error => "Can't find campaign $campaign_code" } unless $campaign;
+  send_error("Can't find campaign $campaign_code for $client_code", 404) unless $campaign;
 
   my @ads = $campaign->ads->search_live;
 
-  return 404, { error => "Can't find any ads in campaign $campaign_code" }
+  send_error("Can't find any ads in campaign $campaign_code for client $client_code", 404)
     unless @ads;
 
   my $ad = @ads > 1 ? $ads[rand @ads] : $ads[0];
@@ -67,9 +67,12 @@ get '/client/:client_code' => sub {
   my $client_code = route_parameters->get('client_code');
   my $client = $model->get_client_from_code($client_code, 1);
 
-  return 404, { error => "Can't find client $client_code" } unless $client;
+  send_error("Can't find client $client_code", 404) unless $client;
 
   my @ads = map { $_->ads->search_live } $client->campaigns->search_live;
+
+  send_error("Can't find any ads for client $client_code", 404)
+    unless @ads;
 
   my $ad = @ads > 1 ? $ads[rand @ads] : $ads[0];
 
@@ -89,7 +92,7 @@ get '/ad/:hash' => sub {
   my $ad = $model->get_ad_from_hash($ad_hash);
 
   unless ($ad) {
-    status 404 and return "Can't find ad $ad_hash";
+    send_error("Can't find ad $ad_hash", 404);
   }
 
   # warn np $ad->get_columns;
