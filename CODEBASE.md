@@ -52,11 +52,14 @@ application-level fallback if they fail.
 
 The template renders the heading, body, optional image, and a shortened display
 URL. Images are expected at `/images/client/<client-code>/<image>`. The text link
-opens the click route in a new tab. Both text and image links share a tracking URL
-that passes the serving request's Referer as a URL-encoded query parameter, with
-the complete URL HTML-escaped for use in the link attribute.
-The click route stores only the supplied `referer` parameter (plus the relationship
-and database timestamp); it does not capture the click request's IP or user agent.
+opens the click route in a new tab. Both links share a tracking URL containing the
+impression token, with the complete URL HTML-escaped for the link attribute.
+`Ad::serve` generates the token using 16 bytes from Crypt::URandom, encoded as
+32 lowercase hexadecimal characters.
+The click route resolves a token within the clicked ad's impressions, copies the
+recorded referer, and stores `impression_id`. Without a token it uses the legacy
+`referer` parameter. Invalid or wrong-ad tokens record an unlinked click with no
+referer and still redirect. It does not capture the click request's IP or user agent.
 Neither route populates the tables' `medium` column.
 
 `display_url` removes an initial HTTP/HTTPS scheme, a trailing fragment matching
@@ -74,6 +77,11 @@ individually unique; campaign codes are unique within a client, and ad codes
 within a campaign. Ads also have a globally unique 32-character hash. Foreign-key
 columns are nullable in SQL, although normal application paths assume the
 client/campaign/ad hierarchy exists. Relationships do not enable cascading deletes.
+
+Impressions have nullable, uniquely indexed tokens; clicks have a nullable foreign
+key to an impression. Nulls preserve compatibility with historical rows and old
+writers. `db/patch_5.sql` adds these fields to existing databases; apply it before
+0.2.0. See README for deployment and rollback details.
 
 Client, campaign, and ad each have `is_live`, defaulting to true. The shared
 `search_live` and `find_live` helpers add `is_live = 1` to their search conditions;
@@ -162,8 +170,8 @@ the root route no longer renders `index.tt`.
 ## Observed limitations and verification
 
 The template inserts ad content fields without explicit HTML escaping, so markup
-in those fields can affect the generated HTML. Tracking URLs now encode the
-Referer query parameter and HTML-escape the link attribute. The
+in those fields can affect the generated HTML. Tracking URLs now carry an opaque impression token and HTML-escape the link
+attribute. The
 template also has a `</bpdy>` closing-tag typo. These are observations of the
 current source, not fixes made during this examination.
 

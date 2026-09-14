@@ -1,4 +1,4 @@
-<% click_url = BLOCK %><% request.base %>ad/<% ad.hash %>?referer=<% referer | uri %><% END %>
+<% click_url = BLOCK %><% request.base %>ad/<% ad.hash %>?impression=<% impression.token | uri %><% END %>
 <html>
   <head>
     <title><% ad.heading %></title>

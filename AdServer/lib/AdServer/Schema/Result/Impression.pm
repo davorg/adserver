@@ -81,6 +81,12 @@ __PACKAGE__->table("impression");
   is_nullable: 1
   size: 2048
 
+=head2 token
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 32
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -103,6 +109,8 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 1, size => 40 },
   "user_agent",
   { data_type => "varchar", is_nullable => 1, size => 2048 },
+  "token",
+  { data_type => "char", is_nullable => 1, size => 32 },
 );
 
 =head1 PRIMARY KEY
@@ -116,6 +124,20 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<impression_token>
+
+=over 4
+
+=item * L</token>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("impression_token", ["token"]);
 
 =head1 RELATIONS
 
@@ -139,9 +161,24 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 clicks
 
-# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-12-12 13:13:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fKDqq3LAdOMLsSJHw16JPQ
+Type: has_many
+
+Related object: L<AdServer::Schema::Result::Click>
+
+=cut
+
+__PACKAGE__->has_many(
+  "clicks",
+  "AdServer::Schema::Result::Click",
+  { "foreign.impression_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07053 @ 2026-09-14 12:32:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uMjRJz31P/ryyUC6XUUEsA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

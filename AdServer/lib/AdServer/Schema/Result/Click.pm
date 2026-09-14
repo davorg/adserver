@@ -69,6 +69,12 @@ __PACKAGE__->table("click");
   is_nullable: 1
   size: 255
 
+=head2 impression_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -87,6 +93,8 @@ __PACKAGE__->add_columns(
   },
   "medium",
   { data_type => "varchar", is_nullable => 1, size => 255 },
+  "impression_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -123,9 +131,29 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 impression
 
-# Created by DBIx::Class::Schema::Loader v0.07051 @ 2023-11-27 16:03:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3jbYuy5fY3W70E29FiUxsw
+Type: belongs_to
+
+Related object: L<AdServer::Schema::Result::Impression>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "impression",
+  "AdServer::Schema::Result::Impression",
+  { id => "impression_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "RESTRICT",
+    on_update     => "RESTRICT",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07053 @ 2026-09-14 12:32:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1P0A+UBcc/gCaOWILNLzEA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

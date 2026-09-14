@@ -6,7 +6,7 @@ use Sys::Hostname;
 
 use AdServer::Model;
 
-our $VERSION = '0.1.0';
+our $VERSION = '0.2.0';
 
 my $model = AdServer::Model->new;
 my $sch = $model->schema;
@@ -95,10 +95,17 @@ get '/ad/:hash' => sub {
     send_error("Can't find ad $ad_hash", 404);
   }
 
-  # warn np $ad->get_columns;
+  my $token = query_parameters->get('impression');
+  my $impression;
+  if (defined $token && $token =~ /\A[0-9a-f]{32}\z/) {
+    # Another ad's impression must not supply attribution for this click.
+    $impression = $ad->impressions->find({ token => $token });
+  }
 
   $ad->add_to_clicks({
-    referer => $referer,
+    impression_id => $impression ? $impression->id : undef,
+    referer => $impression ? $impression->referer
+             : defined $token ? undef : $referer,
   });
 
   return redirect $ad->url;

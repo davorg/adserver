@@ -40,7 +40,7 @@ CREATE TABLE click (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ad_id INT,
     referer VARCHAR(2048),
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     medium VARCHAR(255),
     FOREIGN KEY (ad_id) REFERENCES ad(id)
 );
@@ -49,9 +49,17 @@ CREATE TABLE impression (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ad_id INT,
     referer VARCHAR(2048),
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     medium VARCHAR(255),
     ip_addr CHAR(40),
     user_agent VARCHAR(2048),
     FOREIGN KEY (ad_id) REFERENCES ad(id)
 );
+
+ALTER TABLE impression
+ADD COLUMN token CHAR(32) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ADD UNIQUE KEY impression_token (token);
+
+ALTER TABLE click
+ADD COLUMN impression_id INT NULL,
+ADD CONSTRAINT click_impression_fk FOREIGN KEY (impression_id) REFERENCES impression(id);

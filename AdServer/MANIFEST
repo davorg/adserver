@@ -18,6 +18,7 @@ t/001_base.t
 t/002_index_route.t
 t/003_click_links.t
 t/004_serving.t
+t/005_attribution_migration.t
 t/lib/TestDatabase.pm
 views/layouts/main.tt
 public/javascripts/jquery.js

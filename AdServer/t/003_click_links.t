@@ -22,6 +22,7 @@ for my $referer (
         $tt->process('standard.tt', {
             request => { base => 'https://ads.example/' },
             referer => $referer,
+            impression => { token => 'a' x 32 },
             ad => {
                 hash => 'abc123',
                 heading => 'Example',
@@ -38,8 +39,8 @@ for my $referer (
             my $uri = URI->new($link);
             is($uri->path, '/ad/abc123', 'Link uses the tracking route');
             my %query = $uri->query_form;
-            is_deeply(\%query, { referer => $referer },
-                'Click link preserves the complete referer as one query parameter');
+            is_deeply(\%query, { impression => 'a' x 32 },
+                'Click link carries only the opaque impression token');
         }
     }
 }

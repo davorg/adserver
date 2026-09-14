@@ -69,7 +69,7 @@ sub missing {
     is_deeply([count('Impression'), count('Click')], \@before, 'Rejected request records no events');
 }
 sub click {
-    my ($url, $expected_referer) = @_;
+    my ($url, $expected_referer, $expected_impression) = @_;
     my $before = count('Click');
     my $impressions = count('Impression');
     my $res = $test->request(GET $url);
@@ -80,6 +80,7 @@ sub click {
     my $row = $schema->resultset('Click')->search({}, {order_by => {-desc => 'id'}})->first;
     is($row->ad_id, $ad->id, 'Click belongs to the advertised ad');
     is($row->referer, $expected_referer, 'Click attribution preserved');
+    is($row->impression_id, $expected_impression, 'Click links only to the expected impression');
     ok($row->get_column('timestamp'), 'Database supplies click timestamp');
 }
 
@@ -87,7 +88,20 @@ subtest 'Serving and following both rendered links' => sub {
     my $res = serve($exact, $ad);
     my @links = $res->decoded_content =~ /<a\b[^>]*\bhref="([^"]*)"/g;
     is(scalar @links, 2, 'Image and text each provide a click link');
-    click($_, $referer) for @links;
+    my $impression = $schema->resultset('Impression')->search({}, {order_by => {-desc => 'id'}})->first;
+    like($impression->token, qr/\A[0-9a-f]{32}\z/, 'Impression has an opaque token');
+    click($_, $referer, $impression->id) for @links;
+    click($links[0] . '&referer=forged', $referer, $impression->id);
+    my $legacy = URI->new('/ad/' . $ad->hash);
+    $legacy->query_form(referer => $referer);
+    click($legacy, $referer);
+    click('/ad/' . $ad->hash . '?impression=' . $_ . '&referer=forged', undef)
+        for '', 'invalid', ('0' x 32), ('A' x 32), ('a' x 33);
+    my $foreign_impression = $foreign_ad->add_to_impressions({token => 'f' x 32, referer => 'Foreign'});
+    click('/ad/' . $ad->hash . '?impression=' . $foreign_impression->token, undef);
+    serve($exact, $ad);
+    my $latest = $schema->resultset('Impression')->search({}, {order_by => {-desc => 'id'}})->first;
+    isnt($latest->token, $impression->token, 'Each serving gets a new token');
     click('/ad/' . $ad->hash, undef);
 };
 
@@ -138,6 +152,7 @@ subtest 'Absent request metadata uses serving fallbacks' => sub {
     my $row = $schema->resultset('Impression')->search({}, {order_by => {-desc => 'id'}})->first;
     is($row->referer, 'Unknown referer', 'Missing referer has the documented fallback');
     is($row->user_agent, 'Unknown UA', 'Missing user agent has the documented fallback');
+    click('/ad/' . $ad->hash . '?impression=' . $row->token, 'Unknown referer', $row->id);
 };
 
 subtest 'Client listing includes only live clients' => sub {

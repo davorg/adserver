@@ -220,6 +220,7 @@ __PACKAGE__->has_many(
 
 use Data::Printer;
 use Digest::MD5 'md5_hex';
+use Crypt::URandom qw(urandom);
 
 around insert => sub {
   warn np @_;
@@ -258,7 +259,8 @@ sub serve {
   my $self = shift;
   my ($request) = @_;
 
-  $self->add_to_impressions({
+  my $impression = $self->add_to_impressions({
+    token      => unpack('H*', urandom(16)),
     ip_addr    => ($request->remote_address // 'Unknown address'),
     user_agent => ($request->user_agent // 'Unknown UA'),
     referer    => ($request->referer // 'Unknown referer'),
@@ -269,7 +271,7 @@ sub serve {
     {
       request => $request,
       ad      => $self,
-      referer => ($request->referer // 'Unknown referer'),
+      impression => $impression,
     },
     {
       layout => undef

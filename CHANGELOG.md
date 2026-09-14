@@ -5,6 +5,28 @@ Notable changes to AdServer are recorded here. Versions use Semantic Versioning
 
 ## Unreleased
 
+## 0.2.0 — 2026-09-14
+
+### Added
+
+- Each served impression gets a random 128-bit token. Both click links carry that
+  token instead of the publisher URL; clicks link to the matching impression and
+  copy its recorded referer.
+- Nullable impression tokens and click-to-impression foreign keys, with forward
+  and rollback migrations. Historical records remain unlinked.
+- Integration coverage for valid, missing, malformed, unknown, and wrong-ad tokens,
+  repeated clicks, missing publisher metadata, and migration/rollback behavior.
+
+### Compatibility and deployment
+
+- Apply `db/patch_5.sql` to an existing database before deploying this version.
+  Fresh databases created with `db/adserver.sql` already include the change.
+- Install the now-required `Crypt::URandom` dependency.
+- Existing hash-only links still redirect and accept the legacy `referer`
+  parameter. Invalid or wrong-ad tokens still redirect but record no attribution.
+- Roll back the application before using `db/unpatch_5.sql`; the reverse migration
+  removes tokens and impression links but preserves event rows and referer values.
+
 ## 0.1.0 — 2026-09-14
 
 First SemVer release, replacing the previous `0.1` version string. Earlier
