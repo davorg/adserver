@@ -30,7 +30,7 @@ not runtime application configuration.
 
 | GET route | Behavior |
 | --- | --- |
-| `/` | Returns JSON text containing application name, version (`0.1`), and hostname. |
+| `/` | Returns JSON text containing application name, SemVer version (from `$AdServer::VERSION`), and hostname. |
 | `/client` | Returns JSON text containing all columns of all live clients. |
 | `/client/:client_code` | Selects a random live ad across the client's live campaigns. |
 | `/client/:client_code/campaign/:campaign_code` | Selects a random live ad in the specified live campaign. |

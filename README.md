@@ -9,6 +9,19 @@ This is a simple app to serve ads and track clicks on those ads.
 Because I'm a programmer. And programmers see any problem as an
 excuse to write code.
 
+## Versioning
+
+The application uses Semantic Versioning (`MAJOR.MINOR.PATCH`). The version in
+`AdServer/lib/AdServer.pm` is the source of truth for both the root endpoint's
+`ver` field and Perl package metadata.
+
+Record changes in [CHANGELOG.md](CHANGELOG.md) under `Unreleased`. When releasing,
+bump `$VERSION` and move those entries into a dated version section in the same
+commit. Use patch releases for compatible fixes and minor releases for new
+functionality. While the application is pre-1.0, breaking changes also require a
+minor bump and an explicit changelog note; from 1.0 onward they require a major
+bump.
+
 ## Tests
 
 From the repository root, run:
