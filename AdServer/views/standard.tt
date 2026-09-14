@@ -1,3 +1,4 @@
+<% click_url = BLOCK %><% request.base %>ad/<% ad.hash %>?referer=<% referer | uri %><% END %>
 <html>
   <head>
     <title><% ad.heading %></title>
@@ -33,11 +34,11 @@
     </style>
   </head>
   <body>
-    <% IF ad.image %><div class="img"><a href="<% request.base %>ad/<% ad.hash %>"><img src="/images/client/<% ad.campaign.client.code %>/<% ad.image %>" /></a></div><% END %>
+    <% IF ad.image %><div class="img"><a href="<% click_url | html %>"><img src="/images/client/<% ad.campaign.client.code %>/<% ad.image %>" /></a></div><% END %>
     <div class="text">
       <h1><% ad.heading %></h1>
       <p><% ad.body_text %></p>
-      <p><a target="_blank" href="<% request.base %>ad/<% ad.hash %>?referer=<% referer %>"><% ad.display_url %></a></p>
+      <p><a target="_blank" href="<% click_url | html %>"><% ad.display_url %></a></p>
     </div>
   </bpdy>
 </html>
