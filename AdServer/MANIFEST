@@ -5,6 +5,7 @@ MANIFEST.SKIP
 cpanfile
 Makefile.PL
 views/index.tt
+views/dashboard.tt
 lib/AdServer.pm
 bin/app.psgi
 public/500.html
@@ -19,6 +20,7 @@ t/002_index_route.t
 t/003_click_links.t
 t/004_serving.t
 t/005_attribution_migration.t
+t/006_dashboard.t
 t/lib/TestDatabase.pm
 views/layouts/main.tt
 public/javascripts/jquery.js

@@ -70,4 +70,38 @@ sub get_clients {
   return map { { $_->get_columns } } $self->schema->resultset('Client')->search_live;
 }
 
+sub dashboard_stats {
+  my ($self) = @_;
+  my $schema = $self->schema;
+  my $impressions = $schema->resultset('Impression')->count;
+  my $clicks = $schema->resultset('Click')->count;
+  # Aggregate each event table separately to avoid multiplying counts when an
+  # ad has several impressions and several clicks.
+  my $ads = $schema->storage->dbh->selectall_arrayref(q{
+    SELECT ad.id, ad.name, client.name AS client_name,
+           campaign.name AS campaign_name,
+           (COALESCE(ad.is_live, 0) = 1 AND COALESCE(campaign.is_live, 0) = 1
+             AND COALESCE(client.is_live, 0) = 1) AS serving,
+           COALESCE(i.total, 0) AS impressions, COALESCE(c.total, 0) AS clicks
+    FROM ad
+    LEFT JOIN campaign ON campaign.id = ad.campaign_id
+    LEFT JOIN client ON client.id = campaign.client_id
+    LEFT JOIN (SELECT ad_id, COUNT(*) AS total FROM impression GROUP BY ad_id) i
+      ON i.ad_id = ad.id
+    LEFT JOIN (SELECT ad_id, COUNT(*) AS total FROM click GROUP BY ad_id) c
+      ON c.ad_id = ad.id
+    ORDER BY client.name, campaign.name, ad.name, ad.id
+  }, { Slice => {} });
+  for my $ad (@$ads) {
+    $ad->{ctr} = $ad->{impressions}
+      ? sprintf('%.2f', 100 * $ad->{clicks} / $ad->{impressions}) : '0.00';
+  }
+  return {
+    impressions => $impressions, clicks => $clicks,
+    ctr => $impressions ? sprintf('%.2f', 100 * $clicks / $impressions) : '0.00',
+    ads => $ads, ad_count => scalar @$ads,
+    serving_count => scalar(grep { $_->{serving} } @$ads),
+  };
+}
+
 1;

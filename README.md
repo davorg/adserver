@@ -98,3 +98,15 @@ ORM inserts and updates enforce this rule. Direct SQL can bypass it, so the clic
 route also checks stored destinations: an invalid destination returns HTTP 422
 without recording a click or redirecting. Existing invalid rows are not rewritten;
 correct their URL when updating them. Version 0.2.1 needs no database migration.
+
+## Dashboard
+
+Open `/dashboard` for a read-only, unauthenticated overview of all-time activity.
+It shows impressions, clicks, click-through rate (CTR), and per-ad performance
+with client/campaign names and effective serving status. Inactive ads remain
+visible. Refresh the page to update the figures.
+
+CTR is total clicks divided by total impressions, displayed as a percentage with
+two decimal places (0.00% when there are no impressions). Repeated clicks count
+separately, so CTR can exceed 100%. Totals include historical events without an ad;
+those events do not appear in a per-ad row. No database migration is needed.

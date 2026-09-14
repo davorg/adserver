@@ -6,10 +6,16 @@ use Sys::Hostname;
 
 use AdServer::Model;
 
-our $VERSION = '0.2.1';
+our $VERSION = '0.3.0';
 
 my $model = AdServer::Model->new;
 my $sch = $model->schema;
+
+get '/dashboard' => sub {
+  response_header 'Cache-Control' => 'no-store';
+  return template 'dashboard', { stats => $model->dashboard_stats, version => $VERSION },
+    { layout => undef };
+};
 
 get '/' => sub {
   content_type 'application/json';

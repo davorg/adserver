@@ -3,14 +3,14 @@
 This document describes the source examined on 14 September 2026. AdServer is a
 small Perl/Dancer2 application that selects and renders advertisements, records
 impressions, and redirects tracked clicks to advertisers. Administration happens
-through command-line scripts and the database; there is no admin web interface,
-reporting endpoint, scheduler, or budget-management logic in the application.
+through command-line scripts and the database; there is no editing web interface, scheduler, or budget-management logic. The
+unauthenticated `/dashboard` provides read-only reporting.
 
 ## Code layout and runtime
 
 | Path | Responsibility |
 | --- | --- |
-| `AdServer/lib/AdServer.pm` | All six HTTP GET routes; constructs a shared model and obtains its schema at module load time. |
+| `AdServer/lib/AdServer.pm` | HTTP GET routes; constructs a shared model and obtains its schema at module load time. |
 | `AdServer/lib/AdServer/Model.pm` | Database lookups and live-client listing; optionally prefetches child records. |
 | `AdServer/lib/AdServer/Schema.pm` | DBIx::Class schema discovery and MySQL connection configuration. |
 | `AdServer/lib/AdServer/Schema/Result/` | Five table mappings and relationships; `Ad.pm` also implements hashing, display URLs, and impression recording. |
@@ -30,6 +30,7 @@ not runtime application configuration.
 
 | GET route | Behavior |
 | --- | --- |
+| `/dashboard` | Renders all-time totals and per-ad performance without authentication. |
 | `/` | Returns JSON text containing application name, SemVer version (from `$AdServer::VERSION`), and hostname. |
 | `/client` | Returns JSON text containing all columns of all live clients. |
 | `/client/:client_code` | Selects a random live ad across the client's live campaigns. |
@@ -177,7 +178,8 @@ The click route checks stored destinations too, returning 422 without recording 
 click when invalid. Direct SQL writes bypass the ORM checks.
 
 There is no application authentication, click deduplication, bot filtering,
-retention job, or reporting layer. The public client listing includes database
+retention job. The dashboard aggregates impression and click counts separately to
+avoid join multiplication and includes inactive ads. The public client listing includes database
 IDs and live flags because it serializes all client columns.
 
 Validation performed on 14 September 2026:

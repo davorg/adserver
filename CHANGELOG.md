@@ -5,6 +5,19 @@ Notable changes to AdServer are recorded here. Versions use Semantic Versioning
 
 ## Unreleased
 
+## 0.3.0 — 2026-09-14
+
+### Added
+
+- An unauthenticated, read-only `/dashboard` with all-time impressions, clicks,
+  CTR, serving-ad totals, and per-ad figures grouped visually by client/campaign.
+- Responsive table, empty state, manual refresh, and escaped names. Inactive ads
+  retain their history; serving status includes parent live flags.
+- Integration tests for aggregates, zero-event ads, disabled parents, historical
+  unassigned events, safe rendering, and read-only requests.
+
+No database migration or new dependencies are required.
+
 ## 0.2.1 — 2026-09-14
 
 ### Fixed
