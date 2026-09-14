@@ -177,12 +177,22 @@ Validation performed on 14 September 2026:
 prove -IAdServer/lib AdServer/t
 ```
 
-All three files passed, with 27 assertions total: the app loads, `to_app` returns a
-coderef, GET `/` succeeds, and rendered text/image tracking links preserve complete
-Referer values, including query strings, quotes, and fragments. These tests do not
-exercise database queries, selection, live-flag behavior, impression/click writes, redirects, or
-administrative scripts. No database mutation or live ad-serving check was performed
-for this review; the behavior above is grounded in source inspection.
+The suite now also uses temporary MariaDB servers, loaded from `db/adserver.sql`,
+to exercise actual ORM queries and HTTP requests through Plack. It covers selection
+at all three scopes, impression metadata, both rendered click links, exact redirect
+targets, click attribution, missing records, empty selections, and live flags.
+Application database environment variables are ignored by the test connection
+helper. See the README for prerequisites and isolation details.
+
+Integration testing found that DBIx::Class `find` could discard the non-key
+`is_live` condition during unique-key lookup. `find_live` now scopes the result set
+by its qualified live flag before calling `find`. Disabled ads no longer serve or
+redirect; disabled clients and campaigns block serving. Hash links to live ads
+still redirect regardless of parent status, preserving that existing policy.
+
+Administrative scripts, deployment, and browser-level behavior remain outside the
+test coverage. Tests mutate only their disposable databases; no production database
+or live deployment was exercised.
 
 The working tree already contained untracked `AdServer/public/test.html`,
 `AdServer/views/404.tt`, `data-munging.webp`, and `image.tar`. The HTML files were

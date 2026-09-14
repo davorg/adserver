@@ -30,6 +30,10 @@ feature 'accelerate', 'Accelerate Dancer2 app performance with XS modules' => su
 };
 
 on "test" => sub {
+    requires "DBI"                  => "0";
+    requires "DBD::mysql"           => "0";
+    requires "Plack::Test"          => "0";
+    requires "Ref::Util"            => "0";
     requires "Template"             => "0";
     requires "URI"                  => "0";
     requires "Test::More"            => "0";
