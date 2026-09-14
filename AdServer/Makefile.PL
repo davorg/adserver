@@ -18,6 +18,7 @@ WriteMakefile(
     PL_FILES            => {},
     PREREQ_PM => {
         'Crypt::URandom' => 0,
+        'URI' => 0,
         'Test::More' => 0,
         'YAML'       => 0,
         'Dancer2'     => 1.0.0,

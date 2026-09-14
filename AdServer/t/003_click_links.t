@@ -45,4 +45,25 @@ for my $referer (
     }
 }
 
+my $html;
+$tt->process('standard.tt', {
+    request => { base => 'https://ads.example/' },
+    impression => { token => 'a' x 32 },
+    ad => {
+        hash => 'abc123', heading => '<script>alert("heading")</script>',
+        body_text => '<b>Plain & simple</b>',
+        display_url => 'example.test/?a=1&b=<tag>',
+        image => 'image.png" onerror="alert(1)',
+        campaign => { client => { code => 'client" onclick="alert(1)' } },
+    },
+}, \$html) or die $tt->error;
+like($html, qr/&lt;script&gt;alert\(&quot;heading&quot;\)&lt;\/script&gt;/,
+    'Heading is escaped');
+like($html, qr/&lt;b&gt;Plain &amp; simple&lt;\/b&gt;/, 'Body is plain text');
+like($html, qr/example\.test\/\?a=1&amp;b=&lt;tag&gt;/, 'Display URL is escaped');
+like($html, qr/image\.png&quot; onerror=&quot;alert\(1\)/, 'Image cannot break the attribute');
+like($html, qr/client&quot; onclick=&quot;alert\(1\)/, 'Client code cannot break the attribute');
+unlike($html, qr/<script>|<b>|" onerror="|" onclick="/, 'No injected markup or attributes');
+like($html, qr{</body>}, 'Body closing tag is valid');
+
 done_testing;

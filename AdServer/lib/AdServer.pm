@@ -6,12 +6,13 @@ use Sys::Hostname;
 
 use AdServer::Model;
 
-our $VERSION = '0.2.0';
+our $VERSION = '0.2.1';
 
 my $model = AdServer::Model->new;
 my $sch = $model->schema;
 
 get '/' => sub {
+  content_type 'application/json';
   return encode_json({
     app  => 'AdServer',
     ver  => $VERSION,
@@ -80,6 +81,7 @@ get '/client/:client_code' => sub {
 };
 
 get '/client' => sub {
+  content_type 'application/json';
 
   return encode_json({
     clients => [ $model->get_clients ],
@@ -94,6 +96,8 @@ get '/ad/:hash' => sub {
   unless ($ad) {
     send_error("Can't find ad $ad_hash", 404);
   }
+
+  send_error('Invalid ad destination', 422) unless $ad->has_valid_destination;
 
   my $token = query_parameters->get('impression');
   my $impression;

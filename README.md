@@ -85,3 +85,16 @@ dbicdump adserver.conf
 
 Review the generated diff and preserve custom code below the Schema::Loader
 boundary. Do not put database credentials in committed configuration files.
+
+## Ad content and destinations
+
+Headings and `body_text` are plain text. HTML-like content is displayed literally;
+HTML formatting in ad bodies is not supported. Display URLs and image attributes
+are also HTML-escaped when rendered.
+
+Ad destinations must be absolute HTTP or HTTPS URLs with a host. Whitespace,
+control characters, and backslashes are rejected; encode spaces in paths as `%20`.
+ORM inserts and updates enforce this rule. Direct SQL can bypass it, so the click
+route also checks stored destinations: an invalid destination returns HTTP 422
+without recording a click or redirecting. Existing invalid rows are not rewritten;
+correct their URL when updating them. Version 0.2.1 needs no database migration.

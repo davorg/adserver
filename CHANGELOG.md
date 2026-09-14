@@ -5,6 +5,24 @@ Notable changes to AdServer are recorded here. Versions use Semantic Versioning
 
 ## Unreleased
 
+## 0.2.1 — 2026-09-14
+
+### Fixed
+
+- Render headings, body text, display URLs, and image-path attributes with HTML
+  escaping. `body_text` is plain text; embedded markup is displayed literally.
+- Correct the advertisement template's closing body tag.
+- Return `application/json` from the root and client-list routes.
+- Require absolute HTTP/HTTPS destinations with a host and no whitespace, control
+  characters, or backslashes on ORM ad inserts and updates. Reject invalid stored
+  destinations at click time with HTTP 422, without redirecting or recording a click.
+
+### Added
+
+- Regression tests for markup/attribute injection, JSON response types, destination
+  validation, and invalid destinations already stored in the database.
+- URI declared as a runtime dependency. No database migration is required.
+
 ## 0.2.0 — 2026-09-14
 
 ### Added

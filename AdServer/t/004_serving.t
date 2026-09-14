@@ -166,4 +166,38 @@ subtest 'Client listing includes only live clients' => sub {
     is_deeply([count('Impression'), count('Click')], \@before, 'Listing records no events');
 };
 
+subtest 'JSON routes identify their response format' => sub {
+    for my $path ('/', '/client') {
+        my $res = $test->request(GET $path);
+        like($res->header('Content-Type'), qr{^application/json(?:;|$)}, "$path is JSON");
+        ok(ref decode_json($res->decoded_content) eq 'HASH', 'Response is a JSON object');
+    }
+};
+
+subtest 'Destination validation' => sub {
+    for my $url ('https://example.test/path?a=1#offer', 'http://example.test/',
+                 'https://example.test:8443/path', 'https://[::1]/') {
+        ok($ad->has_valid_destination($url), "Accept $url");
+    }
+    for my $url ('javascript:alert(1)', 'data:text/html,test', '//example.test/',
+                 '/relative', 'https://', 'https:///path', "https://example.test/\r\nHeader:bad",
+                 'https://example.test/a b', 'https://example.test\\evil') {
+        ok(!$ad->has_valid_destination($url), 'Reject invalid destination');
+        ok(!eval { $ad->update({url => $url}); 1 }, 'ORM update rejects invalid destination');
+    }
+    ok(!eval { $campaign->add_to_ads({code => 'bad-url', name => 'Bad URL',
+        heading => 'Bad', body_text => 'Bad', url => 'javascript:alert(1)'}); 1 },
+        'ORM insert rejects invalid destination');
+    my $url = $ad->url;
+    # Simulate historical data or a direct SQL write bypassing ORM validation.
+    $schema->storage->dbh->do('UPDATE ad SET url = ? WHERE id = ?', undef,
+        'javascript:alert(1)', $ad->id);
+    my $before = count('Click');
+    my $res = $test->request(GET '/ad/' . $ad->hash);
+    is($res->code, 422, 'Invalid stored destination is rejected');
+    ok(!$res->header('Location'), 'No redirect header emitted');
+    is(count('Click'), $before, 'Rejected destination does not count as a click');
+    $schema->storage->dbh->do('UPDATE ad SET url = ? WHERE id = ?', undef, $url, $ad->id);
+};
+
 done_testing;

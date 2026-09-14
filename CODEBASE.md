@@ -136,8 +136,8 @@ FastCGI wrapper requests five detached processes.
 `AdServer/config.yml` selects UTF-8, Template Toolkit with `<% ... %>` delimiters,
 and a default `main` layout. Ad responses explicitly bypass that layout. Development
 logs to the console with stack traces; production logs to a file and hides stack
-traces and server tokens. The default content type is `text/html`: the two JSON
-routes encode their bodies manually without explicitly setting a JSON content type.
+traces and server tokens. The default content type is `text/html`; the root and client-list routes explicitly
+set `application/json` and encode their response bodies.
 
 The dependency manifests are incomplete. Beyond their Dancer2 and testing entries,
 the source needs modules including DBIx::Class, its DateTime inflation support,
@@ -169,11 +169,12 @@ the root route no longer renders `index.tt`.
 
 ## Observed limitations and verification
 
-The template inserts ad content fields without explicit HTML escaping, so markup
-in those fields can affect the generated HTML. Tracking URLs now carry an opaque impression token and HTML-escape the link
-attribute. The
-template also has a `</bpdy>` closing-tag typo. These are observations of the
-current source, not fixes made during this examination.
+The template HTML-escapes headings, plain-text bodies, display URLs, image-path
+attributes, and tracking URLs. Body markup is displayed literally. The closing
+body tag is valid. ORM ad inserts and updates require absolute HTTP/HTTPS
+destinations with a host and reject whitespace, control characters, and backslashes.
+The click route checks stored destinations too, returning 422 without recording a
+click when invalid. Direct SQL writes bypass the ORM checks.
 
 There is no application authentication, click deduplication, bot filtering,
 retention job, or reporting layer. The public client listing includes database

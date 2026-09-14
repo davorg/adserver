@@ -221,12 +221,16 @@ __PACKAGE__->has_many(
 use Data::Printer;
 use Digest::MD5 'md5_hex';
 use Crypt::URandom qw(urandom);
+use URI;
 
 around insert => sub {
   warn np @_;
 
   my $orig = shift;
   my $self = shift;
+
+  die "Ad destination must be an absolute HTTP or HTTPS URL\n"
+    unless $self->has_valid_destination;
 
   unless ($self->hash) {
     my $sch = $self->result_source->schema;
@@ -238,6 +242,24 @@ around insert => sub {
   }
 
   $self->$orig(@_);
+};
+
+sub has_valid_destination {
+  my ($self, $url) = @_;
+  $url = $self->url unless @_ > 1;
+  return 0 unless defined $url && $url =~ m{\Ahttps?://}i;
+  return 0 if $url =~ /[\x00-\x20\x7f\\]/;
+  my $uri = URI->new($url);
+  return 0 unless defined $uri->host && length $uri->host;
+  return 1;
+}
+
+around update => sub {
+  my ($orig, $self, $changes, @rest) = @_;
+  my $url = $changes && exists $changes->{url} ? $changes->{url} : $self->url;
+  die "Ad destination must be an absolute HTTP or HTTPS URL\n"
+    unless $self->has_valid_destination($url);
+  return defined $changes ? $self->$orig($changes, @rest) : $self->$orig;
 };
 
 sub display_url {
