@@ -1,6 +1,8 @@
 package AdServer::Model;
 
 use AdServer::Schema;
+use Time::Piece;
+use Time::Seconds qw(ONE_DAY);
 
 use Moo;
 use Types::Standard 'InstanceOf';
@@ -102,6 +104,74 @@ sub dashboard_stats {
     ads => $ads, ad_count => scalar @$ads,
     serving_count => scalar(grep { $_->{serving} } @$ads),
   };
+}
+
+sub dashboard_graph {
+  my ($self, %args) = @_;
+  my $dbh = $self->schema->storage->dbh;
+  my $today = $dbh->selectrow_array('SELECT CURRENT_DATE');
+  my $end = $args{to} || $today;
+  my $start = $args{from} || (Time::Piece->strptime($today, '%Y-%m-%d') - 29 * ONE_DAY)->ymd;
+  my @dates;
+  for ($start, $end) {
+    die "Use dates in YYYY-MM-DD format\n" unless /\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/;
+    my $date = eval { Time::Piece->strptime($_, '%Y-%m-%d') };
+    die "Invalid date\n" unless $date && $date->ymd eq $_;
+    push @dates, $date;
+  }
+  my $days = int(($dates[1] - $dates[0]) / ONE_DAY) + 1;
+  die "Choose a date range of 1 to 366 days\n" unless $days > 0 && $days <= 366;
+  my $metric = $args{metric} || 'impressions';
+  die "Unknown metric\n" unless $metric eq 'impressions' || $metric eq 'clicks';
+  my @options = ({ value => 'all', label => 'All ads' });
+  for my $client ($self->schema->resultset('Client')->search({}, {order_by => 'name'})) {
+    push @options, {value => 'client:' . $client->id, label => 'Client: ' . $client->name};
+  }
+  for my $campaign ($self->schema->resultset('Campaign')->search({}, {prefetch => 'client', order_by => 'me.name'})) {
+    push @options, {value => 'campaign:' . $campaign->id,
+      label => 'Campaign: ' . ($campaign->client ? $campaign->client->name : '(no client)') . ' / ' . $campaign->name};
+  }
+  for my $ad ($self->schema->resultset('Ad')->search({}, {prefetch => {campaign => 'client'}, order_by => 'me.name'})) {
+    my $campaign = $ad->campaign;
+    push @options, {value => 'ad:' . $ad->id,
+      label => 'Ad: ' . ($campaign && $campaign->client ? $campaign->client->name : '(no client)')
+        . ' / ' . ($campaign ? $campaign->name : '(no campaign)') . ' / ' . $ad->name};
+  }
+  my $scope = $args{scope} || 'all';
+  my ($selected) = grep { $_->{value} eq $scope } @options;
+  die "Unknown ad filter\n" unless $selected;
+  my ($where, @bind) = ('');
+  if ($scope ne 'all') {
+    my ($kind, $id) = split /:/, $scope;
+    my %column = (client => 'campaign.client_id', campaign => 'ad.campaign_id', ad => 'ad.id');
+    $where = ' AND ' . $column{$kind} . ' = ?';
+    push @bind, $id;
+  }
+  my $table = $metric eq 'clicks' ? 'click' : 'impression';
+  my $rows = $dbh->selectall_arrayref(
+    "SELECT DATE(event.timestamp) AS day, COUNT(*) AS total FROM $table event " .
+    'LEFT JOIN ad ON ad.id = event.ad_id LEFT JOIN campaign ON campaign.id = ad.campaign_id ' .
+    'WHERE event.timestamp >= ? AND event.timestamp < ?' . $where .
+    ' GROUP BY DATE(event.timestamp) ORDER BY day', {Slice => {}},
+    $start, ($dates[1] + ONE_DAY)->ymd, @bind);
+  my %counts = map { $_->{day} => $_->{total} } @$rows;
+  my (@points, $max, $total);
+  $max = $total = 0;
+  for my $offset (0 .. $days - 1) {
+    my $day = ($dates[0] + $offset * ONE_DAY)->ymd;
+    my $count = $counts{$day} || 0;
+    $max = $count if $count > $max;
+    $total += $count;
+    push @points, {day => $day, count => $count};
+  }
+  my $scale = $max || 1;
+  for my $i (0 .. $#points) {
+    $points[$i]{x} = sprintf('%.2f', $days == 1 ? 450 : 60 + 780 * $i / ($days - 1));
+    $points[$i]{y} = sprintf('%.2f', 250 - 210 * $points[$i]{count} / $scale);
+  }
+  return { from => $start, to => $end, metric => $metric, scope => $scope,
+    options => \@options, label => $selected->{label}, points => \@points,
+    line => join(' ', map { "$_->{x},$_->{y}" } @points), max => $scale, total => $total };
 }
 
 1;

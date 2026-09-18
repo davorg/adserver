@@ -30,7 +30,7 @@ not runtime application configuration.
 
 | GET route | Behavior |
 | --- | --- |
-| `/dashboard` | Renders all-time totals and per-ad performance without authentication. |
+| `/dashboard` | Renders a filtered daily graph, all-time totals, and per-ad performance without authentication. |
 | `/` | Returns JSON text containing application name, SemVer version (from `$AdServer::VERSION`), and hostname. |
 | `/client` | Returns JSON text containing all columns of all live clients. |
 | `/client/:client_code` | Selects a random live ad across the client's live campaigns. |
@@ -210,3 +210,11 @@ The working tree already contained untracked `AdServer/public/test.html`,
 inspected as local context (the former is an iframe experiment); the binary assets
 were not unpacked or executed. None was changed or treated as a committed runtime
 requirement.
+
+The dashboard graph is built by `Model::dashboard_graph` from daily event counts.
+The metric selects one of two fixed table names; scope IDs and date boundaries
+are SQL bind parameters. Filters are validated against existing records, including
+inactive records. The end date is queried as an exclusive next-day boundary so
+all events on the selected last day are included. Missing days are filled with
+zeros. The template renders an inline SVG and a daily-values table without
+JavaScript. Graph filtering does not change the all-time summary cards or ad table.

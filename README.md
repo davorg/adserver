@@ -110,3 +110,18 @@ CTR is total clicks divided by total impressions, displayed as a percentage with
 two decimal places (0.00% when there are no impressions). Repeated clicks count
 separately, so CTR can exceed 100%. Totals include historical events without an ad;
 those events do not appear in a per-ad row. No database migration is needed.
+
+### Daily activity graph
+
+At `/dashboard`, choose **Impressions** or **Clicks**, select all ads, a client,
+a campaign, or one ad, then click **Update graph**. The graph defaults to the last
+30 days including today. Both date endpoints are inclusive; select up to 366 days.
+Days without events display zero. Dates follow the database connection's time zone.
+Inactive ads and parents remain available for historical reporting.
+
+Hover over a point for its date and count, or expand **View daily values** for the
+full table. Graph filters are saved in the URL, so filtered views can be bookmarked.
+They apply only to the graph; the cards and performance table below remain all-time,
+all-ad summaries. All-ad graphs include unassigned historical events, while narrower
+filters include only events associated with the selected ad hierarchy. No schema
+migration, JavaScript library, or external chart service is needed.

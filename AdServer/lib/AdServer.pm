@@ -6,14 +6,19 @@ use Sys::Hostname;
 
 use AdServer::Model;
 
-our $VERSION = '0.3.0';
+our $VERSION = '0.4.0';
 
 my $model = AdServer::Model->new;
 my $sch = $model->schema;
 
 get '/dashboard' => sub {
   response_header 'Cache-Control' => 'no-store';
-  return template 'dashboard', { stats => $model->dashboard_stats, version => $VERSION },
+  my %args = map { $_ => query_parameters->get($_) } qw(metric scope from to);
+  my $graph = eval { $model->dashboard_graph(%args) };
+  unless ($graph) {
+    send_error('Unable to load graph. Choose a valid filter, metric, and date range of 1 to 366 days.', 400);
+  }
+  return template 'dashboard', { stats => $model->dashboard_stats, graph => $graph, version => $VERSION },
     { layout => undef };
 };
 
