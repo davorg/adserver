@@ -13,8 +13,9 @@ Notable changes to AdServer are recorded here. Versions use Semantic Versioning
   filters for all ads, a client, a campaign, or a single ad, including inactive ads.
 - Editable inclusive date range, defaulting to the last 30 days, with a maximum
   of 366 days. Missing days appear as zero; dates use the database session time zone.
-- Inline SVG graph with daily-value tooltips and an accessible expandable table.
-  Graph selections are preserved in the URL and require no JavaScript or CDN.
+- Browser-rendered SVG graph with daily-value tooltips and an accessible expandable
+  table. JavaScript fetches `/dashboard/graph` JSON and updates on filter changes
+  without a page reload. Selections persist in the URL; no CDN is used.
 - Integration coverage for date boundaries, zero days, both metrics, scopes,
   rendered selections, and invalid input. No database migration is required.
 

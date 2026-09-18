@@ -24,6 +24,7 @@ t/006_dashboard.t
 t/lib/TestDatabase.pm
 views/layouts/main.tt
 public/javascripts/jquery.js
+public/javascripts/dashboard.js
 public/css/style.css
 public/css/error.css
 public/images/perldancer-bg.jpg

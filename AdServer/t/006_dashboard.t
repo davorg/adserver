@@ -8,6 +8,7 @@ use AdServer::Model;
 use Test::More;
 use Plack::Test;
 use HTTP::Request::Common;
+use JSON::PP qw(decode_json);
 
 my $schema = TestDatabase->schema;
 my $model = AdServer::Model->new(schema => $schema);
@@ -75,15 +76,21 @@ subtest 'Daily graph and filters' => sub {
     my $single = $model->dashboard_graph(from => '2026-09-02', to => '2026-09-02');
     is(scalar @{$single->{points}}, 1, 'Single day is supported');
     is($single->{total}, 0, 'Empty day is zero');
-    my $res = $test->request(GET '/dashboard?metric=clicks&scope=ad:1&from=2026-09-01&to=2026-09-03');
+    my $res = $test->request(GET '/dashboard/graph?metric=clicks&scope=ad:1&from=2026-09-01&to=2026-09-03');
     is($res->code, 200, 'Filtered chart renders');
-    like($res->decoded_content, qr/<polyline points=/, 'SVG chart is present');
-    like($res->decoded_content, qr/value="clicks" checked/, 'Metric selection persists');
-    like($res->decoded_content, qr/value="ad:1" selected/, 'Scope selection persists');
+    like($res->header('Content-Type'), qr{^application/json}, 'Graph endpoint returns JSON');
+    my $data = decode_json($res->decoded_content);
+    is($data->{metric}, 'clicks', 'Metric selection returned');
+    is($data->{scope}, 'ad:1', 'Scope selection returned');
+    is_deeply([map { $_->{count} } @{$data->{points}}], [0, 0, 2], 'JSON contains daily counts');
+    ok(!exists $data->{line} && !exists $data->{points}[0]{x}, 'Server sends data, not rendering coordinates');
+    my $page = $test->request(GET '/dashboard');
+    like($page->decoded_content, qr{javascripts/dashboard.js}, 'Page loads client renderer');
+    unlike($page->decoded_content, qr/<svg|<polyline/, 'Graph is not rendered on the server');
     for my $query ('metric=bad', 'scope=ad:9999', 'scope=client:1%20OR%201=1',
                    'from=2026-02-30', 'from=2026-09-03&to=2026-09-01',
                    'from=2020-01-01&to=2026-09-01') {
-        is($test->request(GET '/dashboard?' . $query)->code, 400, 'Invalid graph input is rejected');
+        is($test->request(GET '/dashboard/graph?' . $query)->code, 400, 'Invalid graph input is rejected');
     }
 };
 done_testing;

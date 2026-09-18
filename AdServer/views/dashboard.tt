@@ -53,30 +53,20 @@
   </header>
   <section class="panel graph" aria-labelledby="activity-heading">
     <h2 id="activity-heading">Daily activity</h2>
-    <form method="get">
+    <form id="graph-form" data-endpoint="<% request.uri_base | html %>/dashboard/graph">
       <fieldset><legend>Measure</legend>
-        <label><input type="radio" name="metric" value="impressions" <% IF graph.metric == 'impressions' %>checked<% END %>> Impressions</label>
-        <label><input type="radio" name="metric" value="clicks" <% IF graph.metric == 'clicks' %>checked<% END %>> Clicks</label>
+        <label><input type="radio" name="metric" value="impressions" checked> Impressions</label>
+        <label><input type="radio" name="metric" value="clicks"> Clicks</label>
       </fieldset>
-      <label>Graph filter<br><select name="scope"><% FOREACH option IN graph.options %><option value="<% option.value | html %>" <% IF option.value == graph.scope %>selected<% END %>><% option.label | html %></option><% END %></select></label>
-      <label>From<br><input type="date" name="from" value="<% graph.from | html %>" required></label>
-      <label>Through<br><input type="date" name="to" value="<% graph.to | html %>" required></label>
+      <label>Graph filter<br><select name="scope"><option value="all">All ads</option></select></label>
+      <label>From<br><input type="date" name="from" required></label>
+      <label>Through<br><input type="date" name="to" required></label>
       <button type="submit">Update graph</button>
     </form>
-    <p><% graph.label | html %> · <strong><% graph.total %> <% graph.metric | html %></strong> from <% graph.from %> through <% graph.to %>. Dates use the database’s time zone.</p>
-    <% UNLESS graph.total %><p>No <% graph.metric | html %> in this range.</p><% END %>
-    <svg viewBox="0 0 900 300" role="img" aria-labelledby="chart-title chart-description">
-      <title id="chart-title">Daily <% graph.metric | html %> — <% graph.label | html %></title>
-      <desc id="chart-description">Dates run left to right from <% graph.from %> to <% graph.to %>. Counts run from 0 to <% graph.max %>. Exact daily values are available in the table below.</desc>
-      <path d="M60 40 H840 M60 250 H840" stroke="#dce5e1" fill="none" />
-      <text x="50" y="45" text-anchor="end" font-size="14" fill="#526662"><% graph.max %></text>
-      <text x="50" y="255" text-anchor="end" font-size="14" fill="#526662">0</text>
-      <polyline points="<% graph.line %>" stroke="#176b58" stroke-width="3" fill="none" />
-      <% FOREACH point IN graph.points %><circle cx="<% point.x %>" cy="<% point.y %>" r="3" fill="#176b58"><title><% point.day %>: <% point.count %> <% graph.metric %></title></circle><% END %>
-      <text x="60" y="280" font-size="14" fill="#526662"><% graph.from %></text>
-      <text x="840" y="280" text-anchor="end" font-size="14" fill="#526662"><% graph.to %></text>
-    </svg>
-    <details><summary>View daily values</summary><div class="table-scroll"><table><thead><tr><th scope="col">Date</th><th scope="col" class="number"><% graph.metric | html %></th></tr></thead><tbody><% FOREACH point IN graph.points %><tr><th scope="row"><% point.day %></th><td class="number"><% point.count %></td></tr><% END %></tbody></table></div></details>
+    <p id="graph-status" role="status" aria-live="polite">Loading graph…</p>
+    <div id="graph-output"></div>
+    <noscript><p>Enable JavaScript to view the daily graph.</p></noscript>
+    <script src="<% request.uri_base | html %>/javascripts/dashboard.js" defer></script>
     <p>Filters apply to this graph. All-time totals and ad performance below include all ads.</p>
   </section>
   <dl class="cards">

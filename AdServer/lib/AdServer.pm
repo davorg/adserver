@@ -13,13 +13,20 @@ my $sch = $model->schema;
 
 get '/dashboard' => sub {
   response_header 'Cache-Control' => 'no-store';
+  return template 'dashboard', { stats => $model->dashboard_stats, version => $VERSION },
+    { layout => undef };
+};
+
+get '/dashboard/graph' => sub {
+  content_type 'application/json';
+  response_header 'Cache-Control' => 'no-store';
   my %args = map { $_ => query_parameters->get($_) } qw(metric scope from to);
   my $graph = eval { $model->dashboard_graph(%args) };
   unless ($graph) {
-    send_error('Unable to load graph. Choose a valid filter, metric, and date range of 1 to 366 days.', 400);
+    status 400;
+    return encode_json({ error => 'Choose a valid filter, metric, and date range of 1 to 366 days.' });
   }
-  return template 'dashboard', { stats => $model->dashboard_stats, graph => $graph, version => $VERSION },
-    { layout => undef };
+  return encode_json($graph);
 };
 
 get '/' => sub {

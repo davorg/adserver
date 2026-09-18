@@ -155,23 +155,17 @@ sub dashboard_graph {
     ' GROUP BY DATE(event.timestamp) ORDER BY day', {Slice => {}},
     $start, ($dates[1] + ONE_DAY)->ymd, @bind);
   my %counts = map { $_->{day} => $_->{total} } @$rows;
-  my (@points, $max, $total);
-  $max = $total = 0;
+  my @points;
+  my $total = 0;
   for my $offset (0 .. $days - 1) {
     my $day = ($dates[0] + $offset * ONE_DAY)->ymd;
     my $count = $counts{$day} || 0;
-    $max = $count if $count > $max;
     $total += $count;
     push @points, {day => $day, count => $count};
   }
-  my $scale = $max || 1;
-  for my $i (0 .. $#points) {
-    $points[$i]{x} = sprintf('%.2f', $days == 1 ? 450 : 60 + 780 * $i / ($days - 1));
-    $points[$i]{y} = sprintf('%.2f', 250 - 210 * $points[$i]{count} / $scale);
-  }
   return { from => $start, to => $end, metric => $metric, scope => $scope,
     options => \@options, label => $selected->{label}, points => \@points,
-    line => join(' ', map { "$_->{x},$_->{y}" } @points), max => $scale, total => $total };
+    total => $total };
 }
 
 1;

@@ -114,7 +114,7 @@ those events do not appear in a per-ad row. No database migration is needed.
 ### Daily activity graph
 
 At `/dashboard`, choose **Impressions** or **Clicks**, select all ads, a client,
-a campaign, or one ad, then click **Update graph**. The graph defaults to the last
+a campaign, or one ad, and the graph updates automatically. **Update graph** also refreshes the data. The graph defaults to the last
 30 days including today. Both date endpoints are inclusive; select up to 366 days.
 Days without events display zero. Dates follow the database connection's time zone.
 Inactive ads and parents remain available for historical reporting.
@@ -124,4 +124,8 @@ full table. Graph filters are saved in the URL, so filtered views can be bookmar
 They apply only to the graph; the cards and performance table below remain all-time,
 all-ad summaries. All-ad graphs include unassigned historical events, while narrower
 filters include only events associated with the selected ad hierarchy. No schema
-migration, JavaScript library, or external chart service is needed.
+migration, third-party JavaScript library, or external chart service is needed.
+JavaScript is required for the graph; the all-time summaries remain server-rendered.
+`/dashboard/graph` returns JSON containing daily counts, filter choices, and the
+selected range. The browser calculates the SVG coordinates and renders the graph
+and daily-values table. Failed requests display an error; stale requests are cancelled.

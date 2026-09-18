@@ -216,5 +216,7 @@ The metric selects one of two fixed table names; scope IDs and date boundaries
 are SQL bind parameters. Filters are validated against existing records, including
 inactive records. The end date is queried as an exclusive next-day boundary so
 all events on the selected last day are included. Missing days are filled with
-zeros. The template renders an inline SVG and a daily-values table without
-JavaScript. Graph filtering does not change the all-time summary cards or ad table.
+zeros. The `/dashboard/graph` endpoint returns these counts as JSON.
+`public/javascripts/dashboard.js` fetches them and renders the SVG and daily-values
+table using DOM APIs and textContent; rendering coordinates are calculated in the
+browser. The page itself does not query daily counts. Graph filtering does not change the all-time summary cards or ad table.
