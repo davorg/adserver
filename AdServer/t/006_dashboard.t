@@ -102,6 +102,12 @@ subtest 'Daily graph and filters' => sub {
     my $data = decode_json($res->decoded_content);
     is($data->{metric}, 'clicks', 'Metric selection returned');
     is($data->{scope}, 'ad:1', 'Scope selection returned');
+    my ($ad_option) = grep { $_->{value} eq 'ad:1' } @{$data->{options}};
+    is($ad_option->{kind}, 'ad', 'Option identifies dropdown type');
+    is($ad_option->{client}, 'client:1', 'Ad option identifies client');
+    is($ad_option->{campaign}, 'campaign:1', 'Ad option identifies campaign');
+    my ($campaign_option) = grep { $_->{value} eq 'campaign:1' } @{$data->{options}};
+    is($campaign_option->{client}, 'client:1', 'Campaign option identifies client');
     is_deeply([map { $_->{count} } @{$data->{points}}], [0, 0, 2], 'JSON contains daily counts');
     ok(!exists $data->{line} && !exists $data->{points}[0]{x}, 'Server sends data, not rendering coordinates');
     my $page = $test->request(GET '/dashboard');

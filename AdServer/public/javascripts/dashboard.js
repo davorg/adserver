@@ -6,6 +6,10 @@
   const keys = ['metric', 'scope', 'from', 'to'];
   let pending;
   let sequence = 0;
+  let options = [];
+  let initialized = false;
+  const filterKeys = ['client', 'campaign', 'ad'];
+  const selection = { client: 'all', campaign: 'all', ad: 'all' };
 
   function element(tag, text, attrs = {}, svg = false) {
     const node = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
@@ -14,11 +18,46 @@
     return node;
   }
 
+  function updateDropdowns() {
+    for (const kind of filterKeys) {
+      const available = options.filter(option => option.kind === kind
+        && (kind === 'client' || selection.client === 'all' || option.client === selection.client)
+        && (kind !== 'ad' || selection.campaign === 'all' || option.campaign === selection.campaign));
+      if (!available.some(option => option.value === selection[kind])) selection[kind] = 'all';
+      form.elements[kind].replaceChildren(element('option', `All ${kind === 'ad' ? 'ads' : kind + 's'}`, { value: 'all' }),
+        ...available.map(option => element('option', option.label, { value: option.value })));
+      form.elements[kind].value = selection[kind];
+    }
+  }
+
+  function selectedScope() {
+    return selection.ad !== 'all' ? selection.ad
+      : selection.campaign !== 'all' ? selection.campaign : selection.client;
+  }
+
   function render(data) {
     form.elements.metric.value = data.metric;
-    form.elements.scope.replaceChildren(...data.options.map(option =>
-      element('option', option.label, { value: option.value })));
-    form.elements.scope.value = data.scope;
+    options = data.options;
+    if (!initialized) {
+      const params = new URL(window.location.href).searchParams;
+      if (filterKeys.some(key => params.has(key))) {
+        for (const key of filterKeys) selection[key] = params.get(key) || 'all';
+      } else {
+        // Older bookmarks used a single scope; restore its hierarchy.
+        const option = options.find(option => option.value === data.scope);
+        if (option?.kind) {
+          selection[option.kind] = option.value;
+          if (option.client) selection.client = option.client;
+          if (option.campaign) selection.campaign = option.campaign;
+        }
+      }
+      initialized = true;
+    }
+    updateDropdowns();
+    if (selectedScope() !== data.scope) {
+      load(new URLSearchParams({ metric: data.metric, from: data.from, to: data.to, scope: selectedScope() }));
+      return false;
+    }
     form.elements.from.value = data.from;
     form.elements.to.value = data.to;
     const max = Math.max(1, ...data.points.map(point => Number(point.count)));
@@ -72,9 +111,10 @@
       const data = await response.json();
       if (current !== sequence) return;
       if (!response.ok) throw new Error(data.error || 'Unable to load graph. Please try again.');
-      render(data);
+      if (render(data) === false) return;
       const url = new URL(window.location.href);
       for (const key of keys) url.searchParams.set(key, data[key]);
+      for (const key of filterKeys) url.searchParams.set(key, selection[key]);
       window.history.replaceState(null, '', url);
     } catch (error) {
       if (current === sequence && error.name !== 'AbortError') {
@@ -87,7 +127,18 @@
 
   function update(event) {
     event.preventDefault();
-    if (form.reportValidity()) load(new URLSearchParams(new FormData(form)));
+    if (filterKeys.includes(event.target.name)) {
+      selection[event.target.name] = event.target.value;
+      if (event.target.name === 'client') selection.campaign = selection.ad = 'all';
+      if (event.target.name === 'campaign') selection.ad = 'all';
+      updateDropdowns();
+    }
+    if (form.reportValidity()) {
+      const params = new URLSearchParams(new FormData(form));
+      for (const key of filterKeys) params.delete(key);
+      params.set('scope', selectedScope());
+      load(params);
+    }
   }
   form.addEventListener('submit', update);
   form.addEventListener('change', update);
@@ -95,6 +146,11 @@
   const url = new URL(window.location.href);
   for (const key of keys) {
     if (url.searchParams.has(key)) initial.set(key, url.searchParams.get(key));
+  }
+  // Explicit dropdown selections take precedence over the legacy scope.
+  if (filterKeys.some(key => url.searchParams.has(key))) {
+    for (const key of filterKeys) selection[key] = url.searchParams.get(key) || 'all';
+    initial.set('scope', selectedScope());
   }
   // Keep dates editable if a bookmarked request is invalid or the request fails.
   for (const key of ['from', 'to']) form.elements[key].value = initial.get(key) || '';

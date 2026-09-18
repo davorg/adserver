@@ -220,3 +220,9 @@ zeros. The `/dashboard/graph` endpoint returns these counts as JSON.
 `public/javascripts/dashboard.js` fetches them and renders the SVG and daily-values
 table using DOM APIs and textContent; rendering coordinates are calculated in the
 browser. The page itself does not query daily counts. Graph filtering does not change the all-time summary cards or ad table.
+
+Graph filter options include their type and parent identifiers. The client uses
+these to populate linked Client/Campaign/Ad dropdowns, with All at each level.
+Requests still use the most specific selected `scope`, preserving the existing
+JSON endpoint contract. Bookmarks retain all three selections; older scope-only
+bookmarks restore their parent hierarchy.

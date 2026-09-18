@@ -58,7 +58,9 @@
         <label><input type="radio" name="metric" value="impressions" checked> Impressions</label>
         <label><input type="radio" name="metric" value="clicks"> Clicks</label>
       </fieldset>
-      <label>Graph filter<br><select name="scope"><option value="all">All ads</option></select></label>
+      <label>Client<br><select name="client"><option value="all">All clients</option></select></label>
+      <label>Campaign<br><select name="campaign"><option value="all">All campaigns</option></select></label>
+      <label>Ad<br><select name="ad"><option value="all">All ads</option></select></label>
       <label>From<br><input type="date" name="from" required></label>
       <label>Through<br><input type="date" name="to" required></label>
       <button type="submit">Update graph</button>

@@ -113,8 +113,10 @@ those events do not appear in a per-ad row. No database migration is needed.
 
 ### Daily activity graph
 
-At `/dashboard`, choose **Impressions** or **Clicks**, select all ads, a client,
-a campaign, or one ad, and the graph updates automatically. **Update graph** also refreshes the data. The graph defaults to the last
+At `/dashboard`, choose **Impressions** or **Clicks**, then use the linked
+**Client**, **Campaign**, and **Ad** dropdowns. Each starts with **All**. Selecting
+a client narrows campaigns and ads; selecting a campaign narrows ads. Changing
+a parent resets its children to All, and the graph updates automatically. **Update graph** also refreshes the data. The graph defaults to the last
 30 days including today. Both date endpoints are inclusive; select up to 366 days.
 Days without events display zero. Dates follow the database connection's time zone.
 Inactive ads and parents remain available for historical reporting.

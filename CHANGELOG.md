@@ -5,6 +5,16 @@ Notable changes to AdServer are recorded here. Versions use Semantic Versioning
 
 ## Unreleased
 
+## 0.5.0 — 2026-09-18
+
+### Changed
+
+- Replace the graph's single filter with linked Client, Campaign, and Ad dropdowns,
+  each starting with All. Parent selections narrow the available descendants;
+  changing a parent resets child selections to All and updates the graph.
+- Preserve dropdown selections in bookmarked URLs and restore older scope-only
+  bookmarks. No database migration is required.
+
 ## 0.4.1 — 2026-09-18
 
 ### Fixed

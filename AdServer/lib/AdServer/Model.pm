@@ -125,15 +125,18 @@ sub dashboard_graph {
   die "Unknown metric\n" unless $metric eq 'impressions' || $metric eq 'clicks';
   my @options = ({ value => 'all', label => 'All ads' });
   for my $client ($self->schema->resultset('Client')->search({}, {order_by => 'name'})) {
-    push @options, {value => 'client:' . $client->id, label => 'Client: ' . $client->name};
+    push @options, {kind => 'client', value => 'client:' . $client->id, label => 'Client: ' . $client->name};
   }
   for my $campaign ($self->schema->resultset('Campaign')->search({}, {prefetch => 'client', order_by => 'me.name'})) {
-    push @options, {value => 'campaign:' . $campaign->id,
+    push @options, {kind => 'campaign', value => 'campaign:' . $campaign->id,
+      client => $campaign->client_id ? 'client:' . $campaign->client_id : 'all',
       label => 'Campaign: ' . ($campaign->client ? $campaign->client->name : '(no client)') . ' / ' . $campaign->name};
   }
   for my $ad ($self->schema->resultset('Ad')->search({}, {prefetch => {campaign => 'client'}, order_by => 'me.name'})) {
     my $campaign = $ad->campaign;
-    push @options, {value => 'ad:' . $ad->id,
+    push @options, {kind => 'ad', value => 'ad:' . $ad->id,
+      campaign => $campaign ? 'campaign:' . $campaign->id : 'all',
+      client => $campaign && $campaign->client_id ? 'client:' . $campaign->client_id : 'all',
       label => 'Ad: ' . ($campaign && $campaign->client ? $campaign->client->name : '(no client)')
         . ' / ' . ($campaign ? $campaign->name : '(no campaign)') . ' / ' . $ad->name};
   }
