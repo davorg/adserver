@@ -6,14 +6,18 @@ use Sys::Hostname;
 
 use AdServer::Model;
 
-our $VERSION = '0.4.0';
+our $VERSION = '0.4.1';
 
 my $model = AdServer::Model->new;
 my $sch = $model->schema;
 
 get '/dashboard' => sub {
   response_header 'Cache-Control' => 'no-store';
-  return template 'dashboard', { stats => $model->dashboard_stats, version => $VERSION },
+  # Use only the mount path: TLS may terminate at a proxy before this request.
+  my $dashboard_base = request->base->path;
+  $dashboard_base =~ s{/$}{};
+  return template 'dashboard', { stats => $model->dashboard_stats, version => $VERSION,
+    dashboard_base => $dashboard_base },
     { layout => undef };
 };
 

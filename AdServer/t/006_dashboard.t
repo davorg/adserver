@@ -18,6 +18,26 @@ is($empty->code, 200, 'Dashboard accessible without authentication');
 like($empty->decoded_content, qr/No ads yet/, 'Empty dashboard is useful');
 is($empty->header('Cache-Control'), 'no-store', 'Dashboard does not cache old figures');
 is($model->dashboard_stats->{ctr}, '0.00', 'Empty CTR avoids division by zero');
+subtest 'Dashboard URLs remain same-origin behind HTTPS proxies' => sub {
+    like($empty->decoded_content, qr{data-endpoint="/dashboard/graph"},
+        'HTTP backend emits a scheme-free JSON endpoint');
+    like($empty->decoded_content, qr{src="/javascripts/dashboard.js"},
+        'HTTP backend emits a scheme-free script URL');
+    my $app = AdServer->to_app;
+    my $mounted = Plack::Test->create(sub {
+        my $env = shift;
+        $env->{SCRIPT_NAME} = '/ads';
+        $env->{PATH_INFO} = '/dashboard';
+        return $app->($env);
+    });
+    my $res = $mounted->request(GET 'http://internal.example/ads/dashboard');
+    is($res->code, 200, 'Dashboard works under a mount path');
+    like($res->decoded_content, qr{data-endpoint="/ads/dashboard/graph"},
+        'JSON endpoint preserves the mount path');
+    like($res->decoded_content, qr{src="/ads/javascripts/dashboard.js"},
+        'Script URL preserves the mount path');
+};
+
 my $dbh = $schema->storage->dbh;
 $dbh->do(q{INSERT INTO client (id, code, name) VALUES (1, 'test', '<script>client</script>')});
 $dbh->do(q{INSERT INTO campaign (id, code, name, client_id) VALUES (1, 'test', 'Campaign', 1)});

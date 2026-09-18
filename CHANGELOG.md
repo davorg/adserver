@@ -5,6 +5,14 @@ Notable changes to AdServer are recorded here. Versions use Semantic Versioning
 
 ## Unreleased
 
+## 0.4.1 — 2026-09-18
+
+### Fixed
+
+- Use same-origin paths for the dashboard script and graph JSON endpoint, avoiding
+  mixed-content blocks when an HTTPS reverse proxy forwards HTTP to the application.
+  Application mount paths are preserved. No database migration is required.
+
 ## 0.4.0 — 2026-09-18
 
 ### Added

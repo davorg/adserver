@@ -53,7 +53,7 @@
   </header>
   <section class="panel graph" aria-labelledby="activity-heading">
     <h2 id="activity-heading">Daily activity</h2>
-    <form id="graph-form" data-endpoint="<% request.uri_base | html %>/dashboard/graph">
+    <form id="graph-form" data-endpoint="<% dashboard_base | html %>/dashboard/graph">
       <fieldset><legend>Measure</legend>
         <label><input type="radio" name="metric" value="impressions" checked> Impressions</label>
         <label><input type="radio" name="metric" value="clicks"> Clicks</label>
@@ -66,7 +66,7 @@
     <p id="graph-status" role="status" aria-live="polite">Loading graph…</p>
     <div id="graph-output"></div>
     <noscript><p>Enable JavaScript to view the daily graph.</p></noscript>
-    <script src="<% request.uri_base | html %>/javascripts/dashboard.js" defer></script>
+    <script src="<% dashboard_base | html %>/javascripts/dashboard.js" defer></script>
     <p>Filters apply to this graph. All-time totals and ad performance below include all ads.</p>
   </section>
   <dl class="cards">
