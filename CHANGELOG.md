@@ -5,6 +5,14 @@ Notable changes to AdServer are recorded here. Versions use Semantic Versioning
 
 ## Unreleased
 
+## 0.5.1 — 2026-09-18
+
+### Fixed
+
+- Include the application version in the dashboard JavaScript URL so browsers
+  fetch the matching script after upgrades instead of reusing cached code for
+  older dropdown markup. No database migration is required.
+
 ## 0.5.0 — 2026-09-18
 
 ### Changed

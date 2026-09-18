@@ -6,7 +6,7 @@ use Sys::Hostname;
 
 use AdServer::Model;
 
-our $VERSION = '0.5.0';
+our $VERSION = '0.5.1';
 
 my $model = AdServer::Model->new;
 my $sch = $model->schema;

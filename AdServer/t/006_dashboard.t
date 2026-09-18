@@ -21,8 +21,8 @@ is($model->dashboard_stats->{ctr}, '0.00', 'Empty CTR avoids division by zero');
 subtest 'Dashboard URLs remain same-origin behind HTTPS proxies' => sub {
     like($empty->decoded_content, qr{data-endpoint="/dashboard/graph"},
         'HTTP backend emits a scheme-free JSON endpoint');
-    like($empty->decoded_content, qr{src="/javascripts/dashboard.js"},
-        'HTTP backend emits a scheme-free script URL');
+    like($empty->decoded_content, qr{src="/javascripts/dashboard\.js\?v=\Q$AdServer::VERSION\E"},
+        'Script URL is same-origin and versioned to bypass stale browser caches');
     my $app = AdServer->to_app;
     my $mounted = Plack::Test->create(sub {
         my $env = shift;
@@ -34,8 +34,8 @@ subtest 'Dashboard URLs remain same-origin behind HTTPS proxies' => sub {
     is($res->code, 200, 'Dashboard works under a mount path');
     like($res->decoded_content, qr{data-endpoint="/ads/dashboard/graph"},
         'JSON endpoint preserves the mount path');
-    like($res->decoded_content, qr{src="/ads/javascripts/dashboard.js"},
-        'Script URL preserves the mount path');
+    like($res->decoded_content, qr{src="/ads/javascripts/dashboard\.js\?v=\Q$AdServer::VERSION\E"},
+        'Versioned script URL preserves the mount path');
 };
 
 my $dbh = $schema->storage->dbh;

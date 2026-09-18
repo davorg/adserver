@@ -68,7 +68,7 @@
     <p id="graph-status" role="status" aria-live="polite">Loading graph…</p>
     <div id="graph-output"></div>
     <noscript><p>Enable JavaScript to view the daily graph.</p></noscript>
-    <script src="<% dashboard_base | html %>/javascripts/dashboard.js" defer></script>
+    <script src="<% dashboard_base | html %>/javascripts/dashboard.js?v=<% version | uri | html %>" defer></script>
     <p>Filters apply to this graph. All-time totals and ad performance below include all ads.</p>
   </section>
   <dl class="cards">
